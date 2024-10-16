@@ -224,15 +224,11 @@ const testValid = (
 const findBadStages = () => {
   //
   let kaiju: FinalData | null = null;
-  let isValid = false;
   //
   //
   Object.keys(finalData).forEach((rackSysId) => {
-    //
     kaiju = finalData[rackSysId];
-    //
-    isValid = testValid(kaiju);
-    if (!isValid) {
+    if (!testValid(kaiju)) {
       problemRacks[rackSysId] = kaiju;
     }
   });
