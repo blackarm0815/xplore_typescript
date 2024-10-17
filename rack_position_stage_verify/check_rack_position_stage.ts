@@ -1,6 +1,7 @@
 interface FinalData {
   assetInstallStatus: string | null;
   assetSubstatus: string | null;
+  assetSysId: string | null;
   installStatus: string | null;
   name: string | null;
   uCablingInstalled: string | null;
@@ -19,7 +20,7 @@ const assetData: Record<string, {
 const finalData: Record<string, FinalData> = {};
 const problemRacks: Record<string, string | FinalData> = {};
 const rackData: Record<string, {
-  asset: string | null,
+  assetSysId: string | null,
   installStatus: string | null,
   name: string | null,
   uCablingInstalled: string | null,
@@ -36,12 +37,14 @@ const checkStateRetired = (
 ) => {
   if (kaiju.assetInstallStatus === null) {
     if (kaiju.assetSubstatus === null) {
-      if (kaiju.installStatus === '7') {
-        if (kaiju.uCablingInstalled === '0') {
-          if (kaiju.uCmdbCiStatus === 'Retired') {
-            if (kaiju.uPduInstalled === '0') {
-              if (kaiju.uTorInstalled === '0') {
-                return true;
+      if (kaiju.assetSysId === null) {
+        if (kaiju.installStatus === '7') {
+          if (kaiju.uCablingInstalled === '0') {
+            if (kaiju.uCmdbCiStatus === 'Retired') {
+              if (kaiju.uPduInstalled === '0') {
+                if (kaiju.uTorInstalled === '0') {
+                  return true;
+                }
               }
             }
           }
@@ -57,10 +60,12 @@ const checkStageReadyToRecieveServer = (
 ) => {
   if (kaiju.assetInstallStatus === '1') {
     if (kaiju.assetSubstatus === 'allocated') {
-      if (kaiju.installStatus === '1') {
-        if (kaiju.uCmdbCiStatus === 'Live') {
-          if (kaiju.uCablingInstalled === '1' && kaiju.uPduInstalled === '1' && kaiju.uTorInstalled === '0') {
-            return true;
+      if (kaiju.assetSysId !== null) {
+        if (kaiju.installStatus === '1') {
+          if (kaiju.uCmdbCiStatus === 'Live') {
+            if (kaiju.uCablingInstalled === '1' && kaiju.uPduInstalled === '1' && kaiju.uTorInstalled === '0') {
+              return true;
+            }
           }
         }
       }
@@ -74,10 +79,12 @@ const checkStageRackBeingConfigured = (
 ) => {
   if (kaiju.assetInstallStatus === '1') {
     if (kaiju.assetSubstatus === 'allocated') {
-      if (kaiju.installStatus === '1') {
-        if (kaiju.uCmdbCiStatus === 'Live') {
-          if (kaiju.uCablingInstalled === '1' || kaiju.uPduInstalled === '1' || kaiju.uTorInstalled === '1') {
-            return true;
+      if (kaiju.assetSysId !== null) {
+        if (kaiju.installStatus === '1') {
+          if (kaiju.uCmdbCiStatus === 'Live') {
+            if (kaiju.uCablingInstalled === '1' || kaiju.uPduInstalled === '1' || kaiju.uTorInstalled === '1') {
+              return true;
+            }
           }
         }
       }
@@ -91,12 +98,14 @@ const checkStageLanded = (
 ) => {
   if (kaiju.assetInstallStatus === '1') {
     if (kaiju.assetSubstatus === 'allocated') {
-      if (kaiju.installStatus === '1') {
-        if (kaiju.uCablingInstalled === '0') {
-          if (kaiju.uCmdbCiStatus === 'Live') {
-            if (kaiju.uPduInstalled === '0') {
-              if (kaiju.uTorInstalled === '0') {
-                return true;
+      if (kaiju.assetSysId !== null) {
+        if (kaiju.installStatus === '1') {
+          if (kaiju.uCablingInstalled === '0') {
+            if (kaiju.uCmdbCiStatus === 'Live') {
+              if (kaiju.uPduInstalled === '0') {
+                if (kaiju.uTorInstalled === '0') {
+                  return true;
+                }
               }
             }
           }
@@ -112,12 +121,14 @@ const checkStagePendingLand = (
 ) => {
   if (kaiju.assetInstallStatus === null) {
     if (kaiju.assetSubstatus === null) {
-      if (kaiju.installStatus === '1') {
-        if (kaiju.uCablingInstalled === '0') {
-          if (kaiju.uCmdbCiStatus === 'Live') {
-            if (kaiju.uPduInstalled === '0') {
-              if (kaiju.uTorInstalled === '0') {
-                return true;
+      if (kaiju.assetSysId === null) {
+        if (kaiju.installStatus === '1') {
+          if (kaiju.uCablingInstalled === '0') {
+            if (kaiju.uCmdbCiStatus === 'Live') {
+              if (kaiju.uPduInstalled === '0') {
+                if (kaiju.uTorInstalled === '0') {
+                  return true;
+                }
               }
             }
           }
@@ -133,12 +144,14 @@ const checkStageMakeup = (
 ) => {
   if (kaiju.assetInstallStatus === null) {
     if (kaiju.assetSubstatus === null) {
-      if (kaiju.installStatus === '1') {
-        if (kaiju.uCablingInstalled === '0') {
-          if (kaiju.uCmdbCiStatus === 'Live') {
-            if (kaiju.uPduInstalled === '0') {
-              if (kaiju.uTorInstalled === '0') {
-                return true;
+      if (kaiju.assetSysId === null) {
+        if (kaiju.installStatus === '1') {
+          if (kaiju.uCablingInstalled === '0') {
+            if (kaiju.uCmdbCiStatus === 'Live') {
+              if (kaiju.uPduInstalled === '0') {
+                if (kaiju.uTorInstalled === '0') {
+                  return true;
+                }
               }
             }
           }
@@ -154,12 +167,14 @@ const checkStageUnavailable = (
 ) => {
   if (kaiju.assetInstallStatus === null) {
     if (kaiju.assetSubstatus === null) {
-      if (kaiju.installStatus === '1') {
-        if (kaiju.uCablingInstalled === '0') {
-          if (kaiju.uCmdbCiStatus === 'Live') {
-            if (kaiju.uPduInstalled === '0') {
-              if (kaiju.uTorInstalled === '0') {
-                return true;
+      if (kaiju.assetSysId === null) {
+        if (kaiju.installStatus === '1') {
+          if (kaiju.uCablingInstalled === '0') {
+            if (kaiju.uCmdbCiStatus === 'Live') {
+              if (kaiju.uPduInstalled === '0') {
+                if (kaiju.uTorInstalled === '0') {
+                  return true;
+                }
               }
             }
           }
@@ -175,12 +190,14 @@ const checkStageUnusable = (
 ) => {
   if (kaiju.assetInstallStatus === null) {
     if (kaiju.assetSubstatus === null) {
-      if (kaiju.installStatus === '1') {
-        if (kaiju.uCablingInstalled === '0') {
-          if (kaiju.uCmdbCiStatus === 'Live') {
-            if (kaiju.uPduInstalled === '0') {
-              if (kaiju.uTorInstalled === '0') {
-                return true;
+      if (kaiju.assetSysId === null) {
+        if (kaiju.installStatus === '1') {
+          if (kaiju.uCablingInstalled === '0') {
+            if (kaiju.uCmdbCiStatus === 'Live') {
+              if (kaiju.uPduInstalled === '0') {
+                if (kaiju.uTorInstalled === '0') {
+                  return true;
+                }
               }
             }
           }
@@ -256,7 +273,7 @@ const createFinalData = () => {
     // find asset install_status and substatus
     testAssetInstallStatus = null;
     testAssetSubstatus = null;
-    testAssetSysId = rackData[rackSysId].asset;
+    testAssetSysId = rackData[rackSysId].assetSysId;
     // was there an asset
     if (testAssetSysId !== null) {
       // was asset data found
@@ -268,6 +285,7 @@ const createFinalData = () => {
     finalData[rackSysId] = {
       assetInstallStatus: testAssetInstallStatus,
       assetSubstatus: testAssetSubstatus,
+      assetSysId: testAssetSysId,
       installStatus: rackData[rackSysId].installStatus,
       name: rackData[rackSysId].name,
       uCablingInstalled: rackData[rackSysId].uCablingInstalled,
@@ -315,7 +333,7 @@ const getRack = (
     // store the rack data
     if (sysId !== null) {
       rackData[sysId] = {
-        asset: testAssetSysId,
+        assetSysId: testAssetSysId,
         installStatus: checkString(grRack.install_status.getValue()),
         name: checkString(grRack.name.getValue()),
         uRackPositionStage: checkString(grRack.u_rack_position_stage.getValue()),
@@ -337,6 +355,7 @@ const main = () => {
   let encodedQuery = '';
   //
   // https://godaddydev.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_rack_list.do%3Fsysparm_query%3Dname%253DP3SJ01.01%255EORname%253DP3SJ01.02%255EORname%253DP3SJ01.03%255EORname%253DP3SJ01.04%255EORname%253DP3SJ01.05%255EORname%253DP3SJ01.06%255EORname%253DP3SJ01.07%255EORname%253DP3SJ01.08%255EORname%253DP3SJ01.09
+  //
   encodedQuery = 'name=P3SJ01.01^ORname=P3SJ01.02^ORname=P3SJ01.03^ORname=P3SJ01.04^ORname=P3SJ01.05';
   encodedQuery += '^ORname=P3SJ01.06^ORname=P3SJ01.07^ORname=P3SJ01.08^ORname=P3SJ01.09^ORname=P3SJ01.10';
   //
