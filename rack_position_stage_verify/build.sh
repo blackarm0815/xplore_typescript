@@ -18,4 +18,7 @@ fi
 echo
 #
 grep -v @ts-ignore < check_rack_position_stage.js > temp.js
+sed -i 's/    /  /g' temp.js
 mv temp.js check_rack_position_stage.js
+echo
+echo
