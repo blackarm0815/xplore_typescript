@@ -62,10 +62,12 @@ const checkStageReadyToRecieveServer = (
   if (kaiju.assetInstallStatus === '1') {
     if (kaiju.assetSubstatus === 'allocated') {
       if (kaiju.assetSysId !== null) {
-        if (kaiju.installStatus === '1') {
+        if (kaiju.uCablingInstalled === '1') {
           if (kaiju.uCmdbCiStatus === 'Live') {
-            if (kaiju.uCablingInstalled === '1' && kaiju.uPduInstalled === '1' && kaiju.uTorInstalled === '1') {
-              return true;
+            if (kaiju.uPduInstalled === '1') {
+              if (kaiju.uTorInstalled === '1') {
+                return true;
+              }
             }
           }
         }
@@ -371,9 +373,9 @@ const report = () => {
   percentage = (countGood / total) * 100;
   //
   reportString += '\n\n\n\n';
-  reportString += `Good data total = ${countGood}\n`;
-  reportString += `Bad data total = ${countBad}\n`;
-  reportString += `Percentage = ${percentage}\n`;
+  reportString += `Total good data = ${countGood}\n`;
+  reportString += `Total bad data = ${countBad}\n`;
+  reportString += `Pass rate = ${percentage}%\n`;
   reportString += '\n\n\n\n';
   // @ts-ignore
   gs.print(reportString);

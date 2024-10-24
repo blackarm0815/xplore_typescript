@@ -34,10 +34,12 @@ var checkStageReadyToRecieveServer = function (kaiju) {
   if (kaiju.assetInstallStatus === '1') {
     if (kaiju.assetSubstatus === 'allocated') {
       if (kaiju.assetSysId !== null) {
-        if (kaiju.installStatus === '1') {
+        if (kaiju.uCablingInstalled === '1') {
           if (kaiju.uCmdbCiStatus === 'Live') {
-            if (kaiju.uCablingInstalled === '1' && kaiju.uPduInstalled === '1' && kaiju.uTorInstalled === '1') {
-              return true;
+            if (kaiju.uPduInstalled === '1') {
+              if (kaiju.uTorInstalled === '1') {
+                return true;
+              }
             }
           }
         }
@@ -314,9 +316,9 @@ var report = function () {
   percentage = (countGood / total) * 100;
   //
   reportString += '\n\n\n\n';
-  reportString += "Good data total = ".concat(countGood, "\n");
-  reportString += "Bad data total = ".concat(countBad, "\n");
-  reportString += "Percentage = ".concat(percentage, "\n");
+  reportString += "Total good data = ".concat(countGood, "\n");
+  reportString += "Total bad data = ".concat(countBad, "\n");
+  reportString += "Pass rate = ".concat(percentage, "%\n");
   reportString += '\n\n\n\n';
   gs.print(reportString);
   gs.print('Good data');
