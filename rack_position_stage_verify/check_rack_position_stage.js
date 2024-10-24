@@ -4,7 +4,8 @@
 //
 var assetData = {};
 var finalData = {};
-var problemRacks = {};
+var badData = {};
+var goodData = {};
 var rackData = {};
 var uniqueAssetSysid = {};
 //
@@ -196,7 +197,10 @@ var findBadStages = function () {
   Object.keys(finalData).forEach(function (rackSysId) {
     kaiju = finalData[rackSysId];
     if (!testValid(kaiju)) {
-      problemRacks[rackSysId] = kaiju;
+      badData[rackSysId] = kaiju;
+    }
+    else {
+      goodData[rackSysId] = kaiju;
     }
   });
 };
@@ -292,6 +296,32 @@ var getRack = function (encodedQuery) {
     }
   }
 };
+var report = function () {
+  //
+  var countBad = 0;
+  var countGood = 0;
+  var percentage = 0;
+  var reportString = '';
+  var total = 0;
+  //
+  countBad = Object.keys(badData).length;
+  countGood = Object.keys(goodData).length;
+  total = countBad + countGood;
+  percentage = (countGood / total) * 100;
+  //
+  reportString += '\n\n\n\n';
+  reportString += "Good data total = ".concat(countGood, "\n");
+  reportString += "Bad data total = ".concat(countBad, "\n");
+  reportString += "Percentage = ".concat(percentage, "\n");
+  reportString += '\n\n\n\n';
+  gs.print(reportString);
+  gs.print('Good data');
+  gs.print(goodData);
+  gs.print('\n\n\n\n');
+  gs.print('Bad data');
+  gs.print(badData);
+  gs.print('\n\n\n\n');
+};
 var main = function () {
   //
   var encodedQuery = '';
@@ -305,8 +335,7 @@ var main = function () {
   getAsset();
   createFinalData();
   findBadStages();
-  //
-  gs.print(problemRacks);
+  report();
 };
 //
 main();

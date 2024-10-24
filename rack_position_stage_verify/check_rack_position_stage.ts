@@ -18,7 +18,8 @@ const assetData: Record<string, {
   substatus: string | null,
 }> = {};
 const finalData: Record<string, FinalData> = {};
-const problemRacks: Record<string, string | FinalData> = {};
+const badData: Record<string, string | FinalData> = {};
+const goodData: Record<string, string | FinalData> = {};
 const rackData: Record<string, {
   assetSysId: string | null,
   installStatus: string | null,
@@ -246,7 +247,9 @@ const findBadStages = () => {
   Object.keys(finalData).forEach((rackSysId) => {
     kaiju = finalData[rackSysId];
     if (!testValid(kaiju)) {
-      problemRacks[rackSysId] = kaiju;
+      badData[rackSysId] = kaiju;
+    } else {
+      goodData[rackSysId] = kaiju;
     }
   });
 };
@@ -350,6 +353,39 @@ const getRack = (
     }
   }
 };
+const report = () => {
+  //
+  let countBad = 0;
+  let countGood = 0;
+  let percentage = 0;
+  let reportString = '';
+  let total = 0;
+  //
+  countBad = Object.keys(badData).length;
+  countGood = Object.keys(goodData).length;
+  total = countBad + countGood;
+  percentage = (countGood / total) * 100;
+  //
+  reportString += '\n\n\n\n';
+  reportString += `Good data total = ${countGood}\n`;
+  reportString += `Bad data total = ${countBad}\n`;
+  reportString += `Percentage = ${percentage}\n`;
+  reportString += '\n\n\n\n';
+  // @ts-ignore
+  gs.print(reportString);
+  // @ts-ignore
+  gs.print('Good data');
+  // @ts-ignore
+  gs.print(goodData);
+  // @ts-ignore
+  gs.print('\n\n\n\n');
+  // @ts-ignore
+  gs.print('Bad data');
+  // @ts-ignore
+  gs.print(badData);
+  // @ts-ignore
+  gs.print('\n\n\n\n');
+};
 const main = () => {
   //
   let encodedQuery = '';
@@ -363,9 +399,7 @@ const main = () => {
   getAsset();
   createFinalData();
   findBadStages();
-  //
-  // @ts-ignore
-  gs.print(problemRacks);
+  report();
 };
 //
 main();
