@@ -52,8 +52,12 @@ var checkStageRackBeingConfigured = function (kaiju) {
       if (kaiju.assetSysId !== null) {
         if (kaiju.installStatus === '1') {
           if (kaiju.uCmdbCiStatus === 'Live') {
+            // some of them are ticked
             if (kaiju.uCablingInstalled === '1' || kaiju.uPduInstalled === '1' || kaiju.uTorInstalled === '1') {
-              return true;
+              // some of them are unticked
+              if (kaiju.uCablingInstalled === '0' || kaiju.uPduInstalled === '0' || kaiju.uTorInstalled === '0') {
+                return true;
+              }
             }
           }
         }
@@ -332,7 +336,7 @@ var main = function () {
   // cmdb_ci_rack list
   // https://godaddydev.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_rack_list.do%3Fsysparm_query%3Dname%253DP3SJ01.01%255EORname%253DP3SJ01.02%255EORname%253DP3SJ01.03%255EORname%253DP3SJ01.04%255EORname%253DP3SJ01.05%255EORname%253DP3SJ01.06%255EORname%253DP3SJ01.07%255EORname%253DP3SJ01.08%255EORname%253DP3SJ01.09
   //
-  encodedQuery = 'name=P3SJ01.01^ORname=P3SJ01.02^ORname=P3SJ01.03^ORname=P3SJ01.04^ORname=P3SJ01.05';
+  encodedQuery = 'name=P3SJ01.02^ORname=P3SJ01.03^ORname=P3SJ01.04^ORname=P3SJ01.05';
   encodedQuery += '^ORname=P3SJ01.06^ORname=P3SJ01.07^ORname=P3SJ01.08^ORname=P3SJ01.09';
   //
   getRack(encodedQuery);
