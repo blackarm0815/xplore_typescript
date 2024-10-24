@@ -36,7 +36,7 @@ var checkStageReadyToRecieveServer = function (kaiju) {
       if (kaiju.assetSysId !== null) {
         if (kaiju.installStatus === '1') {
           if (kaiju.uCmdbCiStatus === 'Live') {
-            if (kaiju.uCablingInstalled === '1' && kaiju.uPduInstalled === '1' && kaiju.uTorInstalled === '0') {
+            if (kaiju.uCablingInstalled === '1' && kaiju.uPduInstalled === '1' && kaiju.uTorInstalled === '1') {
               return true;
             }
           }
@@ -122,7 +122,7 @@ var checkStageMakeup = function (kaiju) {
   }
   return false;
 };
-var checkStageUnavailable = function (kaiju) {
+var checkStageAvailable = function (kaiju) {
   if (kaiju.assetInstallStatus === null) {
     if (kaiju.assetSubstatus === null) {
       if (kaiju.assetSysId === null) {
@@ -166,8 +166,8 @@ var testValid = function (kaiju) {
   if (kaiju.uRackPositionStage === 'unusable') {
     return checkStageUnusable(kaiju);
   }
-  if (kaiju.uRackPositionStage === 'unavailabe') {
-    return checkStageUnavailable(kaiju);
+  if (kaiju.uRackPositionStage === 'available') {
+    return checkStageAvailable(kaiju);
   }
   if (kaiju.uRackPositionStage === 'makeup') {
     return checkStageMakeup(kaiju);
@@ -181,7 +181,7 @@ var testValid = function (kaiju) {
   if (kaiju.uRackPositionStage === 'rackBeingConfigured') {
     return checkStageRackBeingConfigured(kaiju);
   }
-  if (kaiju.uRackPositionStage === 'readyToRecieveServer') {
+  if (kaiju.uRackPositionStage === 'readyToReceiveServer') {
     return checkStageReadyToRecieveServer(kaiju);
   }
   if (kaiju.uRackPositionStage === 'retired') {
@@ -326,10 +326,14 @@ var main = function () {
   //
   var encodedQuery = '';
   //
+  // room view
+  // https://godaddydev.service-now.com/sp?id=room_view&sys_id=1ca188a9db71c7442b56541adc961915
+  //
+  // cmdb_ci_rack list
   // https://godaddydev.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_rack_list.do%3Fsysparm_query%3Dname%253DP3SJ01.01%255EORname%253DP3SJ01.02%255EORname%253DP3SJ01.03%255EORname%253DP3SJ01.04%255EORname%253DP3SJ01.05%255EORname%253DP3SJ01.06%255EORname%253DP3SJ01.07%255EORname%253DP3SJ01.08%255EORname%253DP3SJ01.09
   //
   encodedQuery = 'name=P3SJ01.01^ORname=P3SJ01.02^ORname=P3SJ01.03^ORname=P3SJ01.04^ORname=P3SJ01.05';
-  encodedQuery += '^ORname=P3SJ01.06^ORname=P3SJ01.07^ORname=P3SJ01.08^ORname=P3SJ01.09^ORname=P3SJ01.10';
+  encodedQuery += '^ORname=P3SJ01.06^ORname=P3SJ01.07^ORname=P3SJ01.08^ORname=P3SJ01.09';
   //
   getRack(encodedQuery);
   getAsset();
