@@ -10,10 +10,8 @@ Moomin.prototype = {
   everything: function(encodedQuery) {
     var badData = {};
     var goodData = {};
-    // nonsense code to use encodedQuery string
     badData[encodedQuery] = 'dogwater';
     goodData[encodedQuery] = 'sparkles';
-    // return bad and good data
     return {
       badData: badData,
       goodData: goodData,
