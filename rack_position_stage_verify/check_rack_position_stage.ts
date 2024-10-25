@@ -457,24 +457,52 @@ const report = () => {
   // @ts-ignore
   gs.print('\n\n\n\n');
 };
-const main = () => {
-  //
-  let encodedQuery = '';
-  //
-  // room view
-  // https://godaddydev.service-now.com/sp?id=room_view&sys_id=1ca188a9db71c7442b56541adc961915
-  //
-  // cmdb_ci_rack list
-  // https://godaddydev.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_rack_list.do%3Fsysparm_query%3Dname%253DP3SJ01.01%255EORname%253DP3SJ01.02%255EORname%253DP3SJ01.03%255EORname%253DP3SJ01.04%255EORname%253DP3SJ01.05%255EORname%253DP3SJ01.06%255EORname%253DP3SJ01.07%255EORname%253DP3SJ01.08%255EORname%253DP3SJ01.09
-  //
-  encodedQuery = 'name=P3SJ01.02^ORname=P3SJ01.03^ORname=P3SJ01.04^ORname=P3SJ01.05';
-  encodedQuery += '^ORname=P3SJ01.06^ORname=P3SJ01.07^ORname=P3SJ01.08^ORname=P3SJ01.09';
-  //
-  getRack(encodedQuery);
-  getAsset();
-  createFinalData();
-  sortData();
-  report();
-};
 //
 main();
+//
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
+
+// @ts-ignore
+const networkAdapterVerifier = Class.create();
+networkAdapterVerifier.prototype = {
+  main(
+    encodedQuery: string,
+  ) {
+    getRack(encodedQuery);
+    getAsset();
+    createFinalData();
+    sortData();
+    report();
+  }
+};
