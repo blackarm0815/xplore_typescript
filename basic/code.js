@@ -1,10 +1,8 @@
 // code for script include
 var Moomin = Class.create();
 Moomin.prototype = {
-  //
   // is this needed?
   // initialize: function() {},
-  //
   everything: function(encodedQuery) {
     var badData = {};
     var goodData = {};
@@ -15,7 +13,6 @@ Moomin.prototype = {
       goodData: goodData,
     };
   },
-  //
   // is this needed?
   // type: 'Test'
 };
