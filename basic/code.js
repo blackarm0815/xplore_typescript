@@ -1,5 +1,5 @@
 //
-// code that can be used as a script include
+// code for script include
 //
 var Moomin = Class.create();
 Moomin.prototype = {
@@ -23,11 +23,9 @@ Moomin.prototype = {
   // is this needed?
   // type: 'Test'
 };
+
 //
-//
-//
-//
-// non script include code for testing purposes
+// code for testing. not part of the script include
 //
 var main = function () {
   var snorkMaiden = new Moomin();
