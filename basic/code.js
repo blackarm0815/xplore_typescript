@@ -1,6 +1,4 @@
-//
 // code for script include
-//
 var Moomin = Class.create();
 Moomin.prototype = {
   //
@@ -22,9 +20,7 @@ Moomin.prototype = {
   // type: 'Test'
 };
 
-//
 // code for testing in xplore
-//
 var main = function () {
   var snorkMaiden = new Moomin();
   var allData = snorkMaiden.everything('nameSTARTSWITHtesting');
