@@ -18,8 +18,11 @@ const assetData: Record<string, {
   substatus: string | null,
 }> = {};
 const finalData: Record<string, FinalData> = {};
-const badData: Record<string, string | FinalData> = {};
-const goodData: Record<string, string | FinalData> = {};
+const badData: Record<string, {
+  data: FinalData,
+  failures: Array<string>,
+}> = {};
+const goodData: Record<string, FinalData> = {};
 const rackData: Record<string, {
   assetSysId: string | null,
   installStatus: string | null,
@@ -36,226 +39,285 @@ const uniqueAssetSysid: Record<string, boolean> = {};
 const checkStateRetired = (
   kaiju: FinalData,
 ) => {
-  if (kaiju.assetInstallStatus === null) {
-    if (kaiju.assetSubstatus === null) {
-      if (kaiju.assetSysId === null) {
-        if (kaiju.installStatus === '7') {
-          if (kaiju.uCablingInstalled === '0') {
-            if (kaiju.uCmdbCiStatus === 'Retired') {
-              if (kaiju.uPduInstalled === '0') {
-                if (kaiju.uTorInstalled === '0') {
-                  return true;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+  //
+  const failures: Array<string> = [];
+  let valid = true;
+  //
+  if (kaiju.assetInstallStatus !== null || kaiju.assetSubstatus !== null || kaiju.assetSysId !== null) {
+    valid = false;
+    failures.push('Has Asset');
   }
-  return false;
+  if (kaiju.installStatus !== '7') {
+    valid = false;
+    failures.push('Install status is not retired');
+  }
+  if (kaiju.uCablingInstalled === '1') {
+    valid = false;
+    failures.push('Cabling installed is ticked');
+  }
+  if (kaiju.uCmdbCiStatus !== 'Retired') {
+    valid = false;
+    failures.push('Cmdb Ci Status is not retired');
+  }
+  if (kaiju.uPduInstalled === '1') {
+    valid = false;
+    failures.push('Pdu Installed is ticked');
+  }
+  if (kaiju.uTorInstalled === '1') {
+    valid = false;
+    failures.push('Tor Installed is ticked');
+  }
+  return {
+    valid,
+    failures,
+  };
 };
 
 const checkStageReadyToRecieveServer = (
   kaiju: FinalData,
 ) => {
-  if (kaiju.assetInstallStatus === '1') {
-    if (kaiju.assetSubstatus === 'allocated') {
-      if (kaiju.assetSysId !== null) {
-        if (kaiju.uCablingInstalled === '1') {
-          if (kaiju.uCmdbCiStatus === 'Live') {
-            if (kaiju.uPduInstalled === '1') {
-              if (kaiju.uTorInstalled === '1') {
-                return true;
-              }
-            }
-          }
-        }
-      }
-    }
+  //
+  const failures: Array<string> = [];
+  let valid = true;
+  //
+  if (kaiju.assetInstallStatus !== '1') {
+    valid = false;
+    failures.push('Asset Install Status is not Live');
   }
-  return false;
+  if (kaiju.assetSubstatus !== 'allocated') {
+    valid = false;
+    failures.push('Asset Substatus is not allocated');
+  }
+  if (kaiju.assetSysId === null) {
+    valid = false;
+    failures.push('Asset missing');
+  }
+  if (kaiju.installStatus !== '1') {
+    valid = false;
+    failures.push('Install status is not Live');
+  }
+  if (kaiju.uCablingInstalled === '0') {
+    valid = false;
+    failures.push('Cabling installed is not ticked');
+  }
+  if (kaiju.uCmdbCiStatus !== 'Live') {
+    valid = false;
+    failures.push('Cmdb Ci Status is not Live');
+  }
+  if (kaiju.uPduInstalled === '0') {
+    valid = false;
+    failures.push('Pdu Installed is not ticked');
+  }
+  if (kaiju.uTorInstalled === '0') {
+    valid = false;
+    failures.push('Tor Installed is not ticked');
+  }
+  return {
+    valid,
+    failures,
+  };
 };
 
-const checkStageRackBeingConfigured = (
-  kaiju: FinalData,
-) => {
-  if (kaiju.assetInstallStatus === '1') {
-    if (kaiju.assetSubstatus === 'allocated') {
-      if (kaiju.assetSysId !== null) {
-        if (kaiju.installStatus === '1') {
-          if (kaiju.uCmdbCiStatus === 'Live') {
-            // some of them are ticked
-            if (kaiju.uCablingInstalled === '1' || kaiju.uPduInstalled === '1' || kaiju.uTorInstalled === '1') {
-              // some of them are unticked
-              if (kaiju.uCablingInstalled === '0' || kaiju.uPduInstalled === '0' || kaiju.uTorInstalled === '0') {
-                return true;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  return false;
-};
+// const checkStageRackBeingConfigured = (
+//   kaiju: FinalData,
+// ) => {
+//   if (kaiju.assetInstallStatus === '1') {
+//     if (kaiju.assetSubstatus === 'allocated') {
+//       if (kaiju.assetSysId !== null) {
+//         if (kaiju.installStatus === '1') {
+//           if (kaiju.uCmdbCiStatus === 'Live') {
+//       //       some of them are ticked
+//             if (kaiju.uCablingInstalled === '1' || kaiju.uPduInstalled === '1' || kaiju.uTorInstalled === '1') {
+//         //       some of them are unticked
+//               if (kaiju.uCablingInstalled === '0' || kaiju.uPduInstalled === '0' || kaiju.uTorInstalled === '0') {
+//                 return true;
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+//   return false;
+// };
 
-const checkStageLanded = (
-  kaiju: FinalData,
-) => {
-  if (kaiju.assetInstallStatus === '1') {
-    if (kaiju.assetSubstatus === 'allocated') {
-      if (kaiju.assetSysId !== null) {
-        if (kaiju.installStatus === '1') {
-          if (kaiju.uCablingInstalled === '0') {
-            if (kaiju.uCmdbCiStatus === 'Live') {
-              if (kaiju.uPduInstalled === '0') {
-                if (kaiju.uTorInstalled === '0') {
-                  return true;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  return false;
-};
+// const checkStageLanded = (
+//   kaiju: FinalData,
+// ) => {
+//   if (kaiju.assetInstallStatus === '1') {
+//     if (kaiju.assetSubstatus === 'allocated') {
+//       if (kaiju.assetSysId !== null) {
+//         if (kaiju.installStatus === '1') {
+//           if (kaiju.uCablingInstalled === '0') {
+//             if (kaiju.uCmdbCiStatus === 'Live') {
+//               if (kaiju.uPduInstalled === '0') {
+//                 if (kaiju.uTorInstalled === '0') {
+//                   return true;
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+//   return false;
+// };
 
-const checkStagePendingLand = (
-  kaiju: FinalData,
-) => {
-  if (kaiju.assetInstallStatus === null) {
-    if (kaiju.assetSubstatus === null) {
-      if (kaiju.assetSysId === null) {
-        if (kaiju.installStatus === '1') {
-          if (kaiju.uCablingInstalled === '0') {
-            if (kaiju.uCmdbCiStatus === 'Live') {
-              if (kaiju.uPduInstalled === '0') {
-                if (kaiju.uTorInstalled === '0') {
-                  return true;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  return false;
-};
+// const checkStagePendingLand = (
+//   kaiju: FinalData,
+// ) => {
+//   if (kaiju.assetInstallStatus === null) {
+//     if (kaiju.assetSubstatus === null) {
+//       if (kaiju.assetSysId === null) {
+//         if (kaiju.installStatus === '1') {
+//           if (kaiju.uCablingInstalled === '0') {
+//             if (kaiju.uCmdbCiStatus === 'Live') {
+//               if (kaiju.uPduInstalled === '0') {
+//                 if (kaiju.uTorInstalled === '0') {
+//                   return true;
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+//   return false;
+// };
 
-const checkStageMakeup = (
-  kaiju: FinalData,
-) => {
-  if (kaiju.assetInstallStatus === null) {
-    if (kaiju.assetSubstatus === null) {
-      if (kaiju.assetSysId === null) {
-        if (kaiju.installStatus === '1') {
-          if (kaiju.uCablingInstalled === '0') {
-            if (kaiju.uCmdbCiStatus === 'Live') {
-              if (kaiju.uPduInstalled === '0') {
-                if (kaiju.uTorInstalled === '0') {
-                  return true;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  return false;
-};
+// const checkStageMakeup = (
+//   kaiju: FinalData,
+// ) => {
+//   if (kaiju.assetInstallStatus === null) {
+//     if (kaiju.assetSubstatus === null) {
+//       if (kaiju.assetSysId === null) {
+//         if (kaiju.installStatus === '1') {
+//           if (kaiju.uCablingInstalled === '0') {
+//             if (kaiju.uCmdbCiStatus === 'Live') {
+//               if (kaiju.uPduInstalled === '0') {
+//                 if (kaiju.uTorInstalled === '0') {
+//                   return true;
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+//   return false;
+// };
 
-const checkStageAvailable = (
-  kaiju: FinalData,
-) => {
-  if (kaiju.assetInstallStatus === null) {
-    if (kaiju.assetSubstatus === null) {
-      if (kaiju.assetSysId === null) {
-        if (kaiju.installStatus === '1') {
-          if (kaiju.uCablingInstalled === '0') {
-            if (kaiju.uCmdbCiStatus === 'Live') {
-              if (kaiju.uPduInstalled === '0') {
-                if (kaiju.uTorInstalled === '0') {
-                  return true;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  return false;
-};
+// const checkStageAvailable = (
+//   kaiju: FinalData,
+// ) => {
+//   if (kaiju.assetInstallStatus === null) {
+//     if (kaiju.assetSubstatus === null) {
+//       if (kaiju.assetSysId === null) {
+//         if (kaiju.installStatus === '1') {
+//           if (kaiju.uCablingInstalled === '0') {
+//             if (kaiju.uCmdbCiStatus === 'Live') {
+//               if (kaiju.uPduInstalled === '0') {
+//                 if (kaiju.uTorInstalled === '0') {
+//                   return true;
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+//   return false;
+// };
 
-const checkStageUnusable = (
-  kaiju: FinalData,
-) => {
-  if (kaiju.assetInstallStatus === null) {
-    if (kaiju.assetSubstatus === null) {
-      if (kaiju.assetSysId === null) {
-        if (kaiju.installStatus === '1') {
-          if (kaiju.uCablingInstalled === '0') {
-            if (kaiju.uCmdbCiStatus === 'Live') {
-              if (kaiju.uPduInstalled === '0') {
-                if (kaiju.uTorInstalled === '0') {
-                  return true;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  return false;
-};
+// const checkStageUnusable = (
+//   kaiju: FinalData,
+// ) => {
+//   if (kaiju.assetInstallStatus === null) {
+//     if (kaiju.assetSubstatus === null) {
+//       if (kaiju.assetSysId === null) {
+//         if (kaiju.installStatus === '1') {
+//           if (kaiju.uCablingInstalled === '0') {
+//             if (kaiju.uCmdbCiStatus === 'Live') {
+//               if (kaiju.uPduInstalled === '0') {
+//                 if (kaiju.uTorInstalled === '0') {
+//                   return true;
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+//   return false;
+// };
 
 const testValid = (
   kaiju: FinalData,
 ) => {
-  if (kaiju.uRackPositionStage === 'unusable') {
-    return checkStageUnusable(kaiju);
-  }
-  if (kaiju.uRackPositionStage === 'available') {
-    return checkStageAvailable(kaiju);
-  }
-  if (kaiju.uRackPositionStage === 'makeup') {
-    return checkStageMakeup(kaiju);
-  }
-  if (kaiju.uRackPositionStage === 'pendingLand') {
-    return checkStagePendingLand(kaiju);
-  }
-  if (kaiju.uRackPositionStage === 'landed') {
-    return checkStageLanded(kaiju);
-  }
-  if (kaiju.uRackPositionStage === 'rackBeingConfigured') {
-    return checkStageRackBeingConfigured(kaiju);
-  }
+  // if (kaiju.uRackPositionStage === 'unusable') {
+  //   return checkStageUnusable(kaiju);
+  // }
+  // if (kaiju.uRackPositionStage === 'available') {
+  //   return checkStageAvailable(kaiju);
+  // }
+  // if (kaiju.uRackPositionStage === 'makeup') {
+  //   return checkStageMakeup(kaiju);
+  // }
+  // if (kaiju.uRackPositionStage === 'pendingLand') {
+  //   return checkStagePendingLand(kaiju);
+  // }
+  // if (kaiju.uRackPositionStage === 'landed') {
+  //   return checkStageLanded(kaiju);
+  // }
+  // if (kaiju.uRackPositionStage === 'rackBeingConfigured') {
+  //   return checkStageRackBeingConfigured(kaiju);
+  // }
   if (kaiju.uRackPositionStage === 'readyToReceiveServer') {
     return checkStageReadyToRecieveServer(kaiju);
   }
   if (kaiju.uRackPositionStage === 'retired') {
     return checkStateRetired(kaiju);
   }
-  return false;
+  return {
+    valid: false,
+    failures: ['Rack Position Stage is missing or unrecognized'],
+  };
 };
 
-const findBadStages = () => {
+const sortData = () => {
   //
   let kaiju: FinalData | null = null;
+  let testResult: {
+    failures: Array<string>,
+    valid: boolean,
+  };
   //
   //
   Object.keys(finalData).forEach((rackSysId) => {
+    //
+    // get the chunk of data being sorted
     kaiju = finalData[rackSysId];
-    if (!testValid(kaiju)) {
-      badData[rackSysId] = kaiju;
-    } else {
+    //
+    // run it through the tests
+    testResult = testValid(kaiju);
+    //
+    // sort into good data or bad data
+    if (testResult.valid) {
+      //
+      // good data gets the original data
       goodData[rackSysId] = kaiju;
+    } else {
+      //
+      // bad data gets the original data plus the reasons it failed
+      badData[rackSysId] = {
+        data: kaiju,
+        failures: testResult.failures,
+      };
     }
   });
 };
@@ -272,7 +334,7 @@ const checkString = (
 };
 
 const createFinalData = () => {
-//
+  //
   let testAssetInstallStatus: string | null = null;
   let testAssetSubstatus: string | null = null;
   let testAssetSysId: string | null = null;
@@ -306,7 +368,7 @@ const createFinalData = () => {
   });
 };
 const getAsset = () => {
-//
+  //
   let sysId: string | null = null;
   //
   // @ts-ignore
@@ -331,6 +393,7 @@ const getRack = (
   //
   let sysId: string | null = null;
   let testAssetSysId: string | null = null;
+  //
   // @ts-ignore
   const grRack = new GlideRecord('cmdb_ci_rack');
   grRack.addEncodedQuery(encodedQuery);
@@ -380,15 +443,17 @@ const report = () => {
   // @ts-ignore
   gs.print(reportString);
   // @ts-ignore
-  gs.print('Good data');
-  // @ts-ignore
-  gs.print(goodData);
-  // @ts-ignore
   gs.print('\n\n\n\n');
   // @ts-ignore
   gs.print('Bad data');
   // @ts-ignore
   gs.print(badData);
+  // @ts-ignore
+  gs.print('\n\n\n\n');
+  // @ts-ignore
+  gs.print('Good data');
+  // @ts-ignore
+  gs.print(goodData);
   // @ts-ignore
   gs.print('\n\n\n\n');
 };
@@ -408,7 +473,7 @@ const main = () => {
   getRack(encodedQuery);
   getAsset();
   createFinalData();
-  findBadStages();
+  sortData();
   report();
 };
 //
