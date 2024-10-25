@@ -3,9 +3,12 @@
 //
 var Moomin = Class.create();
 Moomin.prototype = {
+  //
+  // what does this do?
+  //
   initialize: function() {},
   // 
-  // everything happens within the scope of the everything function, hence the name
+  // all of my code will be in this function, hence the name
   //
   everything: function(encodedQuery) {
     //
@@ -14,8 +17,7 @@ Moomin.prototype = {
     var badData = {};
     var goodData = {};
     //
-    // this code does not make sense. it is not mean to
-    // in real code the encodedQuery string will be used with a gliderecord
+    // fake code to make use of the gliderecord encodedQuery
     //
     badData[encodedQuery] = 'dogwater';
     goodData[encodedQuery] = 'sparkles';
@@ -28,17 +30,25 @@ Moomin.prototype = {
     };
   },
   //
-  // not entirely clear what this does
+  // what does this do?
   //
   type: 'Test'
 };
 //
-// the main function holds testing code that interacts with the script include code above
-// if more functions are required, keep them inside main so that it can be collapsed
+// testing code to interact with the script include. all testing code will be within the scope of the main function
 //
 var main = function () {
+  //
+  // instantiate the class
+  //
   var snorkMaiden = new Moomin();
-  var allData = snorkMaiden.everything('testing123');
+  //
+  // pass a gliderecord encoded query to the everything function. get returned data
+  //
+  var allData = snorkMaiden.everything('nameSTARTSWITHtesting');
+  //
+  // show the data returned from the script include
+  //
   gs.debug(allData.badData);
   gs.debug(allData.goodData);
 };
