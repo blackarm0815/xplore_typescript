@@ -33,7 +33,4 @@ var main = function () {
   gs.debug(allData.badData);
   gs.debug(allData.goodData);
 };
-//
-// engage
-//
 main();
