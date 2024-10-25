@@ -25,7 +25,7 @@ Moomin.prototype = {
 };
 
 //
-// code for testing. not part of the script include
+// code for testing in xplore
 //
 var main = function () {
   var snorkMaiden = new Moomin();
