@@ -10,10 +10,10 @@ Moomin.prototype = {
   everything: function(encodedQuery) {
     var badData = {};
     var goodData = {};
-    // nonsense code to make use of the gliderecord encodedQuery
+    // nonsense code to use encodedQuery string
     badData[encodedQuery] = 'dogwater';
     goodData[encodedQuery] = 'sparkles';
-    // always return both bad and good data
+    // return bad and good data
     return {
       badData: badData,
       goodData: goodData,
