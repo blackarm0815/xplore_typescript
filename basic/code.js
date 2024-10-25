@@ -4,9 +4,8 @@
 var Moomin = Class.create();
 Moomin.prototype = {
   //
-  // what does this do?
-  //
-  initialize: function() {},
+  // is this needed?
+  // initialize: function() {},
   // 
   // all of my code will be in this function, hence the name
   //
@@ -30,9 +29,8 @@ Moomin.prototype = {
     };
   },
   //
-  // what does this do?
-  //
-  type: 'Test'
+  // is this needed?
+  // type: 'Test'
 };
 //
 // non script include testing code. all exists within the main() function
