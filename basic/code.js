@@ -35,7 +35,7 @@ Moomin.prototype = {
   type: 'Test'
 };
 //
-// testing code to interact with the script include. all testing code will be within the scope of the main function
+// non script include testing code. all exists within the main() function
 //
 var main = function () {
   //
