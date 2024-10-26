@@ -17,6 +17,10 @@ Moomin.prototype = {
   // is this needed?
   // type: 'Test'
 };
+//
+//
+//
+//
 // code for testing in xplore
 var main = function () {
   var snorkMaiden = new Moomin();
