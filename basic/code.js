@@ -1,9 +1,10 @@
+"use strict";
 // code for script include
 var Moomin = Class.create();
 Moomin.prototype = {
   // is this needed?
   // initialize: function() {},
-  everything: function(encodedQuery) {
+  everything: function (encodedQuery) {
     var badData = {};
     var goodData = {};
     badData[encodedQuery] = 'dogwater';
@@ -16,7 +17,6 @@ Moomin.prototype = {
   // is this needed?
   // type: 'Test'
 };
-
 // code for testing in xplore
 var main = function () {
   var snorkMaiden = new Moomin();
