@@ -7,6 +7,7 @@ Moomin.prototype = {
   everything: (encodedQuery: string) => {
     const badData: Record<string, string> = {};
     const goodData: Record<string, string> = {};
+    // nonsense code
     badData[encodedQuery] = 'dogwater';
     goodData[encodedQuery] = 'sparkles';
     return {
