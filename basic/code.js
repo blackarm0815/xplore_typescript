@@ -96,8 +96,8 @@ var testCode = function () {
   //
   //
   //
-  var kaiju = new ThingThatNeedsNaming();
-  var results = kaiju.execute('glide record encoded query goes here');
+  var shiny = new ThingThatNeedsNaming();
+  var results = shiny.execute('glideRecordEncodedQueryGoesHere');
   //
   //
   //

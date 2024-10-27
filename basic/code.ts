@@ -110,8 +110,8 @@ const testCode = () => {
   //
   //
   //
-  const kaiju = new ThingThatNeedsNaming();
-  const results = kaiju.execute('glide record encoded query goes here');
+  const shiny = new ThingThatNeedsNaming();
+  const results = shiny.execute('glideRecordEncodedQueryGoesHere');
   //
   //
   //
