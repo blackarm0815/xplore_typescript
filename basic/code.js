@@ -8,47 +8,38 @@ ThingThatNeedsNaming.prototype = {
   // this might need to be uncommented if this code is run in an actual script include
   // initialize: function() {},
   //
-  engage: function (encodedQuery) {
-    // there is only one function, engage()
+  main: function (encodedQuery) {
+    // there is only one function, main()
     // it will always be called this
-    // all datastructures will exist in the scope of engage()
-    // all functions will exist in the scope of engage()
-    // data will be returned from the scope of engage()
+    // all datastructures will exist in the scope of main()
+    // all functions will exist in the scope of main()
+    // data will be returned from the scope of main()
     //
     var badData = {};
     var goodData = {};
     //
-    var main = function () {
+    var engage = function () {
       //
       var fakeSysId1 = 'd317aed433a95210702121c91e5c7aaa';
       var fakeSysId2 = 'd317aed433a95210702121c91e5c7aab';
       var fakeSysId3 = 'd317aed433a95210702121c91e5c7aac';
       var fakeSysId4 = 'd317aed433a95210702121c91e5c7aad';
-      var urlStart = '';
       //
-      urlStart = gs.getProperty('glide.servlet.uri');
       badData[fakeSysId1] = {
-        failures: {
+        errors: {
           'string_field issue': true,
           'puny god': true,
         },
-        data: {
-          number_field: 5,
-          string_field: null,
-        },
-        url: "".concat(urlStart, "alm_hardware.do?sys_id=").concat(fakeSysId1),
+        number_field: 5,
+        string_field: null,
       };
       badData[fakeSysId2] = {
-        failures: {
+        errors: {
           'number_field issue': true,
         },
-        data: {
-          number_field: null,
-          string_field: "foo_".concat(encodedQuery),
-        },
-        url: "".concat(urlStart, "alm_hardware.do?sys_id=").concat(fakeSysId2),
+        number_field: null,
+        string_field: "foo_".concat(encodedQuery),
       };
-      //
       goodData[fakeSysId3] = {
         number_field: 4,
         string_field: "foo_".concat(encodedQuery),
@@ -57,55 +48,46 @@ ThingThatNeedsNaming.prototype = {
         number_field: 0,
         string_field: "blah_".concat(encodedQuery),
       };
-      //
     };
-    //
-    main();
-    //
+    engage();
     return {
       badData: badData,
       goodData: goodData,
     };
-    //
   },
   type: 'Test',
 };
 //
 // code for script include - end
 //
-var report = function (countBad, countGood) {
+var report = function (badData, goodData) {
   //
+  var countBad = 0;
+  var countGood = 0;
   var percentage = 0;
   var reportString = '';
   var total = 0;
   //
+  countBad = Object.keys(badData).length;
+  countGood = Object.keys(goodData).length;
   total = countBad + countGood;
   percentage = (countGood / total) * 100;
-  //
   reportString += '\n\n';
   reportString += "Total good data = ".concat(countGood, "\n");
   reportString += "Total bad data = ".concat(countBad, "\n");
   reportString += "Pass rate = ".concat(percentage, "%\n");
   reportString += '\n\n';
   gs.print(reportString);
+  gs.debug(goodData);
+  gs.debug(badData);
 };
 var testCode = function () {
-  //
-  var countBad = 0;
-  var countGood = 0;
-  var badData = null;
-  var goodData = null;
-  //
+  var badData = {};
+  var goodData = {};
   var kaiju = new ThingThatNeedsNaming();
-  var results = kaiju.engage('nameSTARTSWITHtesting');
+  var results = kaiju.main('nameSTARTSWITHtesting');
   badData = results.badData;
   goodData = results.goodData;
-  if (badData !== null && goodData !== null) {
-    countBad = Object.keys(badData).length;
-    countGood = Object.keys(goodData).length;
-    report(countBad, countGood);
-  }
-  gs.debug(results.goodData);
-  gs.debug(results.badData);
+  report(badData, goodData);
 };
 testCode();
