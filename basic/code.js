@@ -8,86 +8,101 @@ ThingThatNeedsNaming.prototype = {
   // this might need to be uncommented if this code is run in an actual script include
   // initialize: function() {},
   //
-  main: function (encodedQuery) {
-    // there is only one function, main()
-    // it will always be called this
-    // all datastructures will exist in the scope of main()
-    // all functions will exist in the scope of main()
-    // data will be returned from the scope of main()
+  execute: function (encodedQuery) {
     //
-    var badData = {};
-    var goodData = {};
+    // all datastructures will exist in the scope of execute()
+    // all functions will exist in the scope of execute()
+    // data will be returned from the scope of execute()
     //
-    var engage = function () {
+    var errors = {};
+    var rawData = {};
+    //
+    var main = function () {
       //
       var fakeSysId1 = 'd317aed433a95210702121c91e5c7aaa';
       var fakeSysId2 = 'd317aed433a95210702121c91e5c7aab';
       var fakeSysId3 = 'd317aed433a95210702121c91e5c7aac';
       var fakeSysId4 = 'd317aed433a95210702121c91e5c7aad';
       //
-      badData[fakeSysId1] = {
-        errors: {
-          'string_field issue': true,
-          'puny god': true,
-        },
-        number_field: 5,
-        string_field: null,
+      rawData[fakeSysId1] = {
+        apples: 1,
+        bananas: 3,
+        carrots: null,
+        name: 'blah',
       };
-      badData[fakeSysId2] = {
-        errors: {
-          'number_field issue': true,
-        },
-        number_field: null,
-        string_field: "foo_".concat(encodedQuery),
+      errors[fakeSysId1] = {};
+      errors[fakeSysId1].data_quality_carrots = true;
+      rawData[fakeSysId2] = {
+        apples: 1,
+        bananas: null,
+        carrots: 3,
+        name: null,
       };
-      goodData[fakeSysId3] = {
-        number_field: 4,
-        string_field: "foo_".concat(encodedQuery),
+      errors[fakeSysId2] = {};
+      errors[fakeSysId2].data_quality_bananas = true;
+      errors[fakeSysId2].data_quality_name = true;
+      rawData[fakeSysId3] = {
+        apples: 1,
+        bananas: 2,
+        carrots: 3,
+        name: 'foo',
       };
-      goodData[fakeSysId4] = {
-        number_field: 0,
-        string_field: "blah_".concat(encodedQuery),
+      rawData[fakeSysId4] = {
+        apples: 3,
+        bananas: 2,
+        carrots: 1,
+        name: encodedQuery,
       };
     };
-    engage();
+    //
+    main();
+    //
     return {
-      badData: badData,
-      goodData: goodData,
+      rawData: rawData,
+      errors: errors,
     };
+    //
   },
   type: 'Test',
 };
 //
 // code for script include - end
 //
-var report = function (badData, goodData) {
+var report = function (errors, rawData) {
   //
   var countBad = 0;
-  var countGood = 0;
   var percentage = 0;
   var reportString = '';
   var total = 0;
   //
-  countBad = Object.keys(badData).length;
-  countGood = Object.keys(goodData).length;
-  total = countBad + countGood;
-  percentage = (countGood / total) * 100;
-  reportString += '\n\n';
-  reportString += "Total good data = ".concat(countGood, "\n");
-  reportString += "Total bad data = ".concat(countBad, "\n");
+  countBad = Object.keys(errors).length;
+  total = Object.keys(rawData).length;
+  percentage = ((total - countBad) / total) * 100;
+  reportString = '\n\n***********\n** stats **\n***********\n\n';
+  reportString += "Total errors = ".concat(countBad, "\n");
+  reportString += "Total rawData = ".concat(total, "\n");
   reportString += "Pass rate = ".concat(percentage, "%\n");
   reportString += '\n\n';
   gs.print(reportString);
-  gs.debug(goodData);
-  gs.debug(badData);
+  gs.debug('\n\n************\n** errors **\n************\n');
+  gs.debug(errors);
+  gs.debug('\n\n*************\n** rawData **\n*************\n');
+  gs.debug(rawData);
 };
 var testCode = function () {
-  var badData = {};
-  var goodData = {};
+  //
+  var rawData = {};
+  var errors = {};
+  //
+  //
+  //
   var kaiju = new ThingThatNeedsNaming();
-  var results = kaiju.main('nameSTARTSWITHtesting');
-  badData = results.badData;
-  goodData = results.goodData;
-  report(badData, goodData);
+  var results = kaiju.execute('glide record encoded query goes here');
+  //
+  //
+  //
+  errors = results.errors;
+  rawData = results.rawData;
+  report(errors, rawData);
 };
 testCode();
