@@ -4,16 +4,18 @@ interface RawData {
   carrots: number | null;
   name: string | null;
 }
+interface Stats {
+  pass_rate: number;
+  total_errors: number;
+  total_rawData: number;
+}
 //
 // code for script include - start
 //
 // @ts-ignore
 const ThingThatNeedsNaming = Class.create();
 ThingThatNeedsNaming.prototype = {
-  //
-  // this might need to be uncommented if this code is run in an actual script include
   // initialize: function() {},
-  //
   execute: (encodedQuery: string) => {
     //
     // all datastructures will exist in the scope of execute()
@@ -22,8 +24,29 @@ ThingThatNeedsNaming.prototype = {
     //
     const errors: Record<string, Record<string, boolean>> = {};
     const rawData: Record<string, RawData> = {};
+    let stats: Stats = {
+      total_errors: 0,
+      total_rawData: 0,
+      pass_rate: 0,
+    };
     //
-    const main = () => {
+    const makeStats = () => {
+      let passRate = 0;
+      let totalErrors = 0;
+      let totalRawData = 0;
+      //
+      totalErrors = Object.keys(errors).length;
+      totalRawData = Object.keys(rawData).length;
+      if (totalRawData !== 0) {
+        passRate = ((totalRawData - totalErrors) / totalRawData) * 100;
+      }
+      stats = {
+        total_errors: totalErrors,
+        total_rawData: totalRawData,
+        pass_rate: passRate,
+      };
+    };
+    const makeFakeData = () => {
       //
       const fakeSysId1 = 'd317aed433a95210702121c91e5c7aaa';
       const fakeSysId2 = 'd317aed433a95210702121c91e5c7aab';
@@ -60,12 +83,17 @@ ThingThatNeedsNaming.prototype = {
         name: encodedQuery,
       };
     };
+    const main = () => {
+      makeFakeData();
+      makeStats();
+    };
     //
     main();
     //
     return {
-      rawData,
       errors,
+      rawData,
+      stats,
     };
     //
   },
@@ -74,49 +102,22 @@ ThingThatNeedsNaming.prototype = {
 //
 // code for script include - end
 //
-const report = (
-  errors: Record<string, Record<string, boolean>>,
-  rawData: Record<string, RawData>,
-) => {
-  //
-  let countBad = 0;
-  let percentage = 0;
-  let reportString = '';
-  let total = 0;
-  //
-  countBad = Object.keys(errors).length;
-  total = Object.keys(rawData).length;
-  percentage = ((total - countBad) / total) * 100;
-  reportString = '\n\n***********\n** stats **\n***********\n\n';
-  reportString += `Total errors = ${countBad}\n`;
-  reportString += `Total rawData = ${total}\n`;
-  reportString += `Pass rate = ${percentage}%\n`;
-  reportString += '\n\n';
-  // @ts-ignore
-  gs.print(reportString);
-  // @ts-ignore
-  gs.debug('\n\n************\n** errors **\n************\n');
-  // @ts-ignore
-  gs.debug(errors);
-  // @ts-ignore
-  gs.debug('\n\n*************\n** rawData **\n*************\n');
-  // @ts-ignore
-  gs.debug(rawData);
-};
-const testCode = () => {
-  //
-  let rawData: Record<string, RawData> = {};
-  let errors: Record<string, Record<string, boolean>> = {};
-  //
-  //
+const testing = () => {
   //
   const shiny = new ThingThatNeedsNaming();
   const results = shiny.execute('glideRecordEncodedQueryGoesHere');
   //
-  //
-  //
-  errors = results.errors;
-  rawData = results.rawData;
-  report(errors, rawData);
+  // @ts-ignore
+  gs.debug('\n\n***********\n** stats **\n***********\n');
+  // @ts-ignore
+  gs.debug(results.stats);
+  // @ts-ignore
+  gs.debug('\n\n************\n** errors **\n************\n');
+  // @ts-ignore
+  gs.debug(results.errors);
+  // @ts-ignore
+  gs.debug('\n\n*************\n** rawData **\n*************\n');
+  // @ts-ignore
+  gs.debug(results.rawData);
 };
-testCode();
+testing();

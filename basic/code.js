@@ -4,10 +4,7 @@
 //
 var ThingThatNeedsNaming = Class.create();
 ThingThatNeedsNaming.prototype = {
-  //
-  // this might need to be uncommented if this code is run in an actual script include
   // initialize: function() {},
-  //
   execute: function (encodedQuery) {
     //
     // all datastructures will exist in the scope of execute()
@@ -16,8 +13,29 @@ ThingThatNeedsNaming.prototype = {
     //
     var errors = {};
     var rawData = {};
+    var stats = {
+      total_errors: 0,
+      total_rawData: 0,
+      pass_rate: 0,
+    };
     //
-    var main = function () {
+    var makeStats = function () {
+      var passRate = 0;
+      var totalErrors = 0;
+      var totalRawData = 0;
+      //
+      totalErrors = Object.keys(errors).length;
+      totalRawData = Object.keys(rawData).length;
+      if (totalRawData !== 0) {
+        passRate = ((totalRawData - totalErrors) / totalRawData) * 100;
+      }
+      stats = {
+        total_errors: totalErrors,
+        total_rawData: totalRawData,
+        pass_rate: passRate,
+      };
+    };
+    var makeFakeData = function () {
       //
       var fakeSysId1 = 'd317aed433a95210702121c91e5c7aaa';
       var fakeSysId2 = 'd317aed433a95210702121c91e5c7aab';
@@ -54,12 +72,17 @@ ThingThatNeedsNaming.prototype = {
         name: encodedQuery,
       };
     };
+    var main = function () {
+      makeFakeData();
+      makeStats();
+    };
     //
     main();
     //
     return {
-      rawData: rawData,
       errors: errors,
+      rawData: rawData,
+      stats: stats,
     };
     //
   },
@@ -68,41 +91,16 @@ ThingThatNeedsNaming.prototype = {
 //
 // code for script include - end
 //
-var report = function (errors, rawData) {
-  //
-  var countBad = 0;
-  var percentage = 0;
-  var reportString = '';
-  var total = 0;
-  //
-  countBad = Object.keys(errors).length;
-  total = Object.keys(rawData).length;
-  percentage = ((total - countBad) / total) * 100;
-  reportString = '\n\n***********\n** stats **\n***********\n\n';
-  reportString += "Total errors = ".concat(countBad, "\n");
-  reportString += "Total rawData = ".concat(total, "\n");
-  reportString += "Pass rate = ".concat(percentage, "%\n");
-  reportString += '\n\n';
-  gs.print(reportString);
-  gs.debug('\n\n************\n** errors **\n************\n');
-  gs.debug(errors);
-  gs.debug('\n\n*************\n** rawData **\n*************\n');
-  gs.debug(rawData);
-};
-var testCode = function () {
-  //
-  var rawData = {};
-  var errors = {};
-  //
-  //
+var testing = function () {
   //
   var shiny = new ThingThatNeedsNaming();
   var results = shiny.execute('glideRecordEncodedQueryGoesHere');
   //
-  //
-  //
-  errors = results.errors;
-  rawData = results.rawData;
-  report(errors, rawData);
+  gs.debug('\n\n***********\n** stats **\n***********\n');
+  gs.debug(results.stats);
+  gs.debug('\n\n************\n** errors **\n************\n');
+  gs.debug(results.errors);
+  gs.debug('\n\n*************\n** rawData **\n*************\n');
+  gs.debug(results.rawData);
 };
-testCode();
+testing();
