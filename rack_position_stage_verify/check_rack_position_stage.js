@@ -1,422 +1,374 @@
 "use strict";
 //
-// global variables
+// code for script include - start
 //
-var assetData = {};
-var finalData = {};
-var badData = {};
-var goodData = {};
-var rackData = {};
-var uniqueAssetSysid = {};
-//
-//
-var checkStateRetired = function (kaiju) {
-  //
-  var failures = [];
-  var valid = true;
-  //
-  if (kaiju.assetInstallStatus !== null || kaiju.assetSubstatus !== null || kaiju.assetSysId !== null) {
-    valid = false;
-    failures.push('Has Asset');
-  }
-  if (kaiju.installStatus !== '7') {
-    valid = false;
-    failures.push('Install status is not retired');
-  }
-  if (kaiju.uCablingInstalled === '1') {
-    valid = false;
-    failures.push('Cabling installed is ticked');
-  }
-  if (kaiju.uCmdbCiStatus !== 'Retired') {
-    valid = false;
-    failures.push('Cmdb Ci Status is not retired');
-  }
-  if (kaiju.uPduInstalled === '1') {
-    valid = false;
-    failures.push('Pdu Installed is ticked');
-  }
-  if (kaiju.uTorInstalled === '1') {
-    valid = false;
-    failures.push('Tor Installed is ticked');
-  }
-  return {
-    valid: valid,
-    failures: failures,
-  };
-};
-var checkStageReadyToRecieveServer = function (kaiju) {
-  //
-  var failures = [];
-  var valid = true;
-  //
-  if (kaiju.assetInstallStatus !== '1') {
-    valid = false;
-    failures.push('Asset Install Status is not Live');
-  }
-  if (kaiju.assetSubstatus !== 'allocated') {
-    valid = false;
-    failures.push('Asset Substatus is not allocated');
-  }
-  if (kaiju.assetSysId === null) {
-    valid = false;
-    failures.push('Asset missing');
-  }
-  if (kaiju.installStatus !== '1') {
-    valid = false;
-    failures.push('Install status is not Live');
-  }
-  if (kaiju.uCablingInstalled === '0') {
-    valid = false;
-    failures.push('Cabling installed is not ticked');
-  }
-  if (kaiju.uCmdbCiStatus !== 'Live') {
-    valid = false;
-    failures.push('Cmdb Ci Status is not Live');
-  }
-  if (kaiju.uPduInstalled === '0') {
-    valid = false;
-    failures.push('Pdu Installed is not ticked');
-  }
-  if (kaiju.uTorInstalled === '0') {
-    valid = false;
-    failures.push('Tor Installed is not ticked');
-  }
-  return {
-    valid: valid,
-    failures: failures,
-  };
-};
-// const checkStageRackBeingConfigured = (
-//   kaiju: FinalData,
-// ) => {
-//   if (kaiju.assetInstallStatus === '1') {
-//   if (kaiju.assetSubstatus === 'allocated') {
-//     if (kaiju.assetSysId !== null) {
-//     if (kaiju.installStatus === '1') {
-//       if (kaiju.uCmdbCiStatus === 'Live') {
-//     //     some of them are ticked
-//       if (kaiju.uCablingInstalled === '1' || kaiju.uPduInstalled === '1' || kaiju.uTorInstalled === '1') {
-//     //     some of them are unticked
-//         if (kaiju.uCablingInstalled === '0' || kaiju.uPduInstalled === '0' || kaiju.uTorInstalled === '0') {
-//         return true;
-//         }
-//       }
-//       }
-//     }
-//     }
-//   }
-//   }
-//   return false;
-// };
-// const checkStageLanded = (
-//   kaiju: FinalData,
-// ) => {
-//   if (kaiju.assetInstallStatus === '1') {
-//   if (kaiju.assetSubstatus === 'allocated') {
-//     if (kaiju.assetSysId !== null) {
-//     if (kaiju.installStatus === '1') {
-//       if (kaiju.uCablingInstalled === '0') {
-//       if (kaiju.uCmdbCiStatus === 'Live') {
-//         if (kaiju.uPduInstalled === '0') {
-//         if (kaiju.uTorInstalled === '0') {
-//           return true;
-//         }
-//         }
-//       }
-//       }
-//     }
-//     }
-//   }
-//   }
-//   return false;
-// };
-// const checkStagePendingLand = (
-//   kaiju: FinalData,
-// ) => {
-//   if (kaiju.assetInstallStatus === null) {
-//   if (kaiju.assetSubstatus === null) {
-//     if (kaiju.assetSysId === null) {
-//     if (kaiju.installStatus === '1') {
-//       if (kaiju.uCablingInstalled === '0') {
-//       if (kaiju.uCmdbCiStatus === 'Live') {
-//         if (kaiju.uPduInstalled === '0') {
-//         if (kaiju.uTorInstalled === '0') {
-//           return true;
-//         }
-//         }
-//       }
-//       }
-//     }
-//     }
-//   }
-//   }
-//   return false;
-// };
-// const checkStageMakeup = (
-//   kaiju: FinalData,
-// ) => {
-//   if (kaiju.assetInstallStatus === null) {
-//   if (kaiju.assetSubstatus === null) {
-//     if (kaiju.assetSysId === null) {
-//     if (kaiju.installStatus === '1') {
-//       if (kaiju.uCablingInstalled === '0') {
-//       if (kaiju.uCmdbCiStatus === 'Live') {
-//         if (kaiju.uPduInstalled === '0') {
-//         if (kaiju.uTorInstalled === '0') {
-//           return true;
-//         }
-//         }
-//       }
-//       }
-//     }
-//     }
-//   }
-//   }
-//   return false;
-// };
-// const checkStageAvailable = (
-//   kaiju: FinalData,
-// ) => {
-//   if (kaiju.assetInstallStatus === null) {
-//   if (kaiju.assetSubstatus === null) {
-//     if (kaiju.assetSysId === null) {
-//     if (kaiju.installStatus === '1') {
-//       if (kaiju.uCablingInstalled === '0') {
-//       if (kaiju.uCmdbCiStatus === 'Live') {
-//         if (kaiju.uPduInstalled === '0') {
-//         if (kaiju.uTorInstalled === '0') {
-//           return true;
-//         }
-//         }
-//       }
-//       }
-//     }
-//     }
-//   }
-//   }
-//   return false;
-// };
-// const checkStageUnusable = (
-//   kaiju: FinalData,
-// ) => {
-//   if (kaiju.assetInstallStatus === null) {
-//   if (kaiju.assetSubstatus === null) {
-//     if (kaiju.assetSysId === null) {
-//     if (kaiju.installStatus === '1') {
-//       if (kaiju.uCablingInstalled === '0') {
-//       if (kaiju.uCmdbCiStatus === 'Live') {
-//         if (kaiju.uPduInstalled === '0') {
-//         if (kaiju.uTorInstalled === '0') {
-//           return true;
-//         }
-//         }
-//       }
-//       }
-//     }
-//     }
-//   }
-//   }
-//   return false;
-// };
-var testValid = function (kaiju) {
-  // if (kaiju.uRackPositionStage === 'unusable') {
-  //   return checkStageUnusable(kaiju);
-  // }
-  // if (kaiju.uRackPositionStage === 'available') {
-  //   return checkStageAvailable(kaiju);
-  // }
-  // if (kaiju.uRackPositionStage === 'makeup') {
-  //   return checkStageMakeup(kaiju);
-  // }
-  // if (kaiju.uRackPositionStage === 'pendingLand') {
-  //   return checkStagePendingLand(kaiju);
-  // }
-  // if (kaiju.uRackPositionStage === 'landed') {
-  //   return checkStageLanded(kaiju);
-  // }
-  // if (kaiju.uRackPositionStage === 'rackBeingConfigured') {
-  //   return checkStageRackBeingConfigured(kaiju);
-  // }
-  if (kaiju.uRackPositionStage === 'readyToReceiveServer') {
-    return checkStageReadyToRecieveServer(kaiju);
-  }
-  if (kaiju.uRackPositionStage === 'retired') {
-    return checkStateRetired(kaiju);
-  }
-  return {
-    valid: false,
-    failures: ['Rack Position Stage is missing or unrecognized'],
-  };
-};
-var sortData = function () {
-  //
-  var kaiju = null;
-  var testResult;
-  //
-  //
-  Object.keys(finalData).forEach(function (rackSysId) {
+var ThingThatNeedsNaming = Class.create();
+ThingThatNeedsNaming.prototype = {
+  // initialize: function() {},
+  execute: function (encodedQuery) {
     //
-    // get the chunk of data being sorted
-    kaiju = finalData[rackSysId];
-    //
-    // run it through the tests
-    testResult = testValid(kaiju);
-    //
-    // sort into good data or bad data
-    if (testResult.valid) {
-      //
-      // good data gets the original data
-      goodData[rackSysId] = kaiju;
-    }
-    else {
-      //
-      // bad data gets the original data plus the reasons it failed
-      badData[rackSysId] = {
-        data: kaiju,
-        failures: testResult.failures,
-      };
-    }
-  });
-};
-var checkString = function (testVariable) {
-  if (typeof testVariable === 'string') {
-    if (testVariable !== '') {
-      return testVariable;
-    }
-  }
-  return null;
-};
-var createFinalData = function () {
-  //
-  var testAssetInstallStatus = null;
-  var testAssetSubstatus = null;
-  var testAssetSysId = null;
-  //
-  Object.keys(rackData).forEach(function (rackSysId) {
-    //
-    // find asset install_status and substatus
-    testAssetInstallStatus = null;
-    testAssetSubstatus = null;
-    testAssetSysId = rackData[rackSysId].assetSysId;
-    // was there an asset
-    if (testAssetSysId !== null) {
-      // was asset data found
-      if (Object.prototype.hasOwnProperty.call(assetData, testAssetSysId)) {
-        testAssetInstallStatus = assetData[testAssetSysId].installStatus;
-        testAssetSubstatus = assetData[testAssetSysId].substatus;
-      }
-    }
-    finalData[rackSysId] = {
-      assetInstallStatus: testAssetInstallStatus,
-      assetSubstatus: testAssetSubstatus,
-      assetSysId: testAssetSysId,
-      installStatus: rackData[rackSysId].installStatus,
-      name: rackData[rackSysId].name,
-      uCablingInstalled: rackData[rackSysId].uCablingInstalled,
-      uCmdbCiStatus: rackData[rackSysId].uCmdbCiStatus,
-      uPduInstalled: rackData[rackSysId].uPduInstalled,
-      uRackPositionStage: rackData[rackSysId].uRackPositionStage,
-      uTorInstalled: rackData[rackSysId].uTorInstalled,
+    var assetData = {};
+    var errors = {};
+    var rawData = {};
+    var rackData = {};
+    var stats = {
+      total_errors: 0,
+      total_rawData: 0,
+      pass_rate: 0,
     };
-  });
-};
-var getAsset = function () {
-  //
-  var sysId = null;
-  //
-  var grAsset = new GlideRecord('alm_hardware');
-  grAsset.addQuery('sys_id', 'IN', Object.keys(uniqueAssetSysid));
-  grAsset.query();
-  while (grAsset.next()) {
-    sysId = checkString(grAsset.getUniqueValue());
+    var uniqueAssetSysid = {};
     //
-    // store the rack data
-    if (sysId !== null) {
-      assetData[sysId] = {
-        installStatus: checkString(grAsset.install_status.getValue()),
-        substatus: checkString(grAsset.substatus.getValue()),
+    //
+    var storeError = function (errorMessage, rackSysId) {
+      if (!Object.prototype.hasOwnProperty.call(errors, rackSysId)) {
+        errors[rackSysId] = {};
+      }
+      errors[rackSysId][errorMessage] = true;
+    };
+    // const checkStageRackBeingConfigured = (
+    //   rawDataChunk: RawData,
+    // ) => {
+    //   if (rawDataChunk.asset_install_status === '1') {
+    //   if (rawDataChunk.asset_substatus === 'allocated') {
+    //     if (rawDataChunk.asset_sys_id !== null) {
+    //     if (rawDataChunk.rack_install_status === '1') {
+    //       if (rawDataChunk.rack_u_cmdb_ci_status === 'Live') {
+    //     //     some of them are ticked
+    //       if (rawDataChunk.rack_u_cabling_installed === '1' || rawDataChunk.rack_u_pdu_installed === '1' || rawDataChunk.rack_u_tor_installed === '1') {
+    //     //     some of them are unticked
+    //         if (rawDataChunk.rack_u_cabling_installed === '0' || rawDataChunk.rack_u_pdu_installed === '0' || rawDataChunk.rack_u_tor_installed === '0') {
+    //         return true;
+    //         }
+    //       }
+    //       }
+    //     }
+    //     }
+    //   }
+    //   }
+    //   return false;
+    // };
+    // const checkStagePendingLand = (
+    //   rawDataChunk: RawData,
+    // ) => {
+    //   if (rawDataChunk.asset_install_status === null) {
+    //   if (rawDataChunk.asset_substatus === null) {
+    //     if (rawDataChunk.asset_sys_id === null) {
+    //     if (rawDataChunk.rack_install_status === '1') {
+    //       if (rawDataChunk.rack_u_cabling_installed === '0') {
+    //       if (rawDataChunk.rack_u_cmdb_ci_status === 'Live') {
+    //         if (rawDataChunk.rack_u_pdu_installed === '0') {
+    //         if (rawDataChunk.rack_u_tor_installed === '0') {
+    //           return true;
+    //         }
+    //         }
+    //       }
+    //       }
+    //     }
+    //     }
+    //   }
+    //   }
+    //   return false;
+    // };
+    // const checkStageMakeup = (
+    //   rawDataChunk: RawData,
+    // ) => {
+    //   if (rawDataChunk.asset_install_status === null) {
+    //   if (rawDataChunk.asset_substatus === null) {
+    //     if (rawDataChunk.asset_sys_id === null) {
+    //     if (rawDataChunk.rack_install_status === '1') {
+    //       if (rawDataChunk.rack_u_cabling_installed === '0') {
+    //       if (rawDataChunk.rack_u_cmdb_ci_status === 'Live') {
+    //         if (rawDataChunk.rack_u_pdu_installed === '0') {
+    //         if (rawDataChunk.rack_u_tor_installed === '0') {
+    //           return true;
+    //         }
+    //         }
+    //       }
+    //       }
+    //     }
+    //     }
+    //   }
+    //   }
+    //   return false;
+    // };
+    // const checkStageAvailable = (
+    //   rawDataChunk: RawData,
+    // ) => {
+    //   if (rawDataChunk.asset_install_status === null) {
+    //   if (rawDataChunk.asset_substatus === null) {
+    //     if (rawDataChunk.asset_sys_id === null) {
+    //     if (rawDataChunk.rack_install_status === '1') {
+    //       if (rawDataChunk.rack_u_cabling_installed === '0') {
+    //       if (rawDataChunk.rack_u_cmdb_ci_status === 'Live') {
+    //         if (rawDataChunk.rack_u_pdu_installed === '0') {
+    //         if (rawDataChunk.rack_u_tor_installed === '0') {
+    //           return true;
+    //         }
+    //         }
+    //       }
+    //       }
+    //     }
+    //     }
+    //   }
+    //   }
+    //   return false;
+    // };
+    // const checkStageUnusable = (
+    //   rawDataChunk: RawData,
+    // ) => {
+    //   if (rawDataChunk.asset_install_status === null) {
+    //   if (rawDataChunk.asset_substatus === null) {
+    //     if (rawDataChunk.asset_sys_id === null) {
+    //     if (rawDataChunk.rack_install_status === '1') {
+    //       if (rawDataChunk.rack_u_cabling_installed === '0') {
+    //       if (rawDataChunk.rack_u_cmdb_ci_status === 'Live') {
+    //         if (rawDataChunk.rack_u_pdu_installed === '0') {
+    //         if (rawDataChunk.rack_u_tor_installed === '0') {
+    //           return true;
+    //         }
+    //         }
+    //       }
+    //       }
+    //     }
+    //     }
+    //   }
+    //   }
+    //   return false;
+    // };
+    var checkStateRetired = function (rawDataChunk) {
+      if (rawDataChunk.rack_u_rack_position_stage === 'retired') {
+        if (rawDataChunk.asset_install_status !== null || rawDataChunk.asset_substatus !== null || rawDataChunk.asset_sys_id !== null) {
+          storeError('Retired - Has Asset', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_install_status !== '7') {
+          storeError('Retired - Install status is not retired', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_cabling_installed === '1') {
+          storeError('Retired - Cabling installed is ticked', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_cmdb_ci_status !== 'Retired') {
+          storeError('Retired - Cmdb Ci Status is not retired', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_pdu_installed === '1') {
+          storeError('Retired - Pdu Installed is ticked', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_tor_installed === '1') {
+          storeError('Retired - Tor Installed is ticked', rawDataChunk.rack_sys_id);
+        }
+      }
+    };
+    var checkStageReadyToRecieveServer = function (rawDataChunk) {
+      if (rawDataChunk.rack_u_rack_position_stage === 'readyToReceiveServer') {
+        if (rawDataChunk.asset_install_status !== '1') {
+          storeError('Ready To Recieve Server - Asset Install Status is not Live', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.asset_substatus !== 'allocated') {
+          storeError('Ready To Recieve Server - Asset Substatus is not allocated', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.asset_sys_id === null) {
+          storeError('Ready To Recieve Server - Asset missing', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_install_status !== '1') {
+          storeError('Ready To Recieve Server - Install status is not Live', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_cabling_installed === '0') {
+          storeError('Ready To Recieve Server - Cabling installed is not ticked', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_cmdb_ci_status !== 'Live') {
+          storeError('Ready To Recieve Server - Cmdb Ci Status is not Live', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_pdu_installed === '0') {
+          storeError('Ready To Recieve Server - Pdu Installed is not ticked', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_tor_installed === '0') {
+          storeError('Ready To Recieve Server - Tor Installed is not ticked', rawDataChunk.rack_sys_id);
+        }
+      }
+    };
+    var checkStageLanded = function (rawDataChunk) {
+      if (rawDataChunk.rack_u_rack_position_stage === 'landed') {
+        if (rawDataChunk.asset_install_status !== '1') {
+          storeError('Landed - asset_install_status is not 1', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.asset_substatus !== 'allocated') {
+          storeError('Landed - asset_substatus is not allocated', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.asset_sys_id === null) {
+          storeError('Landed - asset missing', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_install_status !== '1') {
+          storeError('Landed - rack_install_status is not 1', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_cabling_installed !== '0') {
+          storeError('Landed - rack_u_cabling_installed is not 0', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_cmdb_ci_status !== 'Live') {
+          storeError('Landed - rack_u_cmdb_ci_status is not Live', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_pdu_installed !== '0') {
+          storeError('Landed - rack_u_pdu_installed is not 0', rawDataChunk.rack_sys_id);
+        }
+        if (rawDataChunk.rack_u_tor_installed !== '0') {
+          storeError('Landed - rack_u_tor_installed is not 0', rawDataChunk.rack_sys_id);
+        }
+      }
+    };
+    var checkEmpty = function (rawDataChunk) {
+      if (rawDataChunk.rack_u_rack_position_stage === null) {
+        storeError('Empty - rack position stage is missing', rawDataChunk.rack_sys_id);
+      }
+    };
+    var testRawData = function () {
+      Object.keys(rawData).forEach(function (rackSysId) {
+        checkStageLanded(rawData[rackSysId]);
+        checkEmpty(rawData[rackSysId]);
+        checkStageReadyToRecieveServer(rawData[rackSysId]);
+        checkStateRetired(rawData[rackSysId]);
+      });
+    };
+    var checkString = function (testVariable) {
+      if (typeof testVariable === 'string') {
+        if (testVariable !== '') {
+          return testVariable;
+        }
+      }
+      return null;
+    };
+    var createRawData = function () {
+      //
+      var testAssetInstallStatus = null;
+      var testAssetSubstatus = null;
+      var testAssetSysId = null;
+      //
+      Object.keys(rackData).forEach(function (rackSysId) {
+        //
+        // find asset install_status and substatus
+        testAssetInstallStatus = null;
+        testAssetSubstatus = null;
+        testAssetSysId = rackData[rackSysId].asset_sys_id;
+        // was there an asset
+        if (testAssetSysId !== null) {
+          // was asset data found
+          if (Object.prototype.hasOwnProperty.call(assetData, testAssetSysId)) {
+            testAssetInstallStatus = assetData[testAssetSysId].asset_install_status;
+            testAssetSubstatus = assetData[testAssetSysId].asset_substatus;
+          }
+        }
+        rawData[rackSysId] = {
+          asset_install_status: testAssetInstallStatus,
+          asset_substatus: testAssetSubstatus,
+          asset_sys_id: testAssetSysId,
+          rack_install_status: rackData[rackSysId].rack_install_status,
+          rack_name: rackData[rackSysId].rack_name,
+          rack_sys_id: rackSysId,
+          rack_u_cabling_installed: rackData[rackSysId].rack_u_cabling_installed,
+          rack_u_cmdb_ci_status: rackData[rackSysId].rack_u_cmdb_ci_status,
+          rack_u_pdu_installed: rackData[rackSysId].rack_u_pdu_installed,
+          rack_u_rack_position_stage: rackData[rackSysId].rack_u_rack_position_stage,
+          rack_u_tor_installed: rackData[rackSysId].rack_u_tor_installed,
+        };
+      });
+    };
+    var getAsset = function () {
+      //
+      var sysId = null;
+      //
+      var grAsset = new GlideRecord('alm_hardware');
+      grAsset.addQuery('sys_id', 'IN', Object.keys(uniqueAssetSysid));
+      grAsset.query();
+      while (grAsset.next()) {
+        sysId = checkString(grAsset.getUniqueValue());
+        //
+        // store the rack data
+        if (sysId !== null) {
+          assetData[sysId] = {
+            asset_install_status: checkString(grAsset.install_status.getValue()),
+            asset_substatus: checkString(grAsset.substatus.getValue()),
+          };
+        }
+      }
+    };
+    var getRack = function () {
+      //
+      var sysId = null;
+      var testAssetSysId = null;
+      //
+      var grRack = new GlideRecord('cmdb_ci_rack');
+      grRack.addEncodedQuery(encodedQuery);
+      grRack.query();
+      while (grRack.next()) {
+        sysId = checkString(grRack.getUniqueValue());
+        testAssetSysId = checkString(grRack.asset.getValue());
+        //
+        // store the rack data
+        if (sysId !== null) {
+          rackData[sysId] = {
+            asset_sys_id: testAssetSysId,
+            rack_install_status: checkString(grRack.install_status.getValue()),
+            rack_name: checkString(grRack.name.getValue()),
+            rack_u_rack_position_stage: checkString(grRack.u_rack_position_stage.getValue()),
+            rack_u_cabling_installed: checkString(grRack.u_cabling_installed.getValue()),
+            rack_u_cmdb_ci_status: checkString(grRack.u_cmdb_ci_status.getDisplayValue()),
+            rack_u_pdu_installed: checkString(grRack.u_pdu_installed.getValue()),
+            rack_u_tor_installed: checkString(grRack.u_tor_installed.getValue()),
+          };
+        }
+        //
+        // store the asset sys_ids for the alm_hardware batch query
+        if (testAssetSysId !== null) {
+          uniqueAssetSysid[testAssetSysId] = true;
+        }
+      }
+    };
+    var makeStats = function () {
+      var passRate = 0;
+      var totalErrors = 0;
+      var totalRawData = 0;
+      //
+      totalErrors = Object.keys(errors).length;
+      totalRawData = Object.keys(rawData).length;
+      if (totalRawData !== 0) {
+        passRate = ((totalRawData - totalErrors) / totalRawData) * 100;
+      }
+      stats = {
+        total_errors: totalErrors,
+        total_rawData: totalRawData,
+        pass_rate: passRate,
       };
-    }
-  }
-};
-var getRack = function (encodedQuery) {
-  //
-  var sysId = null;
-  var testAssetSysId = null;
-  //
-  var grRack = new GlideRecord('cmdb_ci_rack');
-  grRack.addEncodedQuery(encodedQuery);
-  grRack.query();
-  while (grRack.next()) {
-    sysId = checkString(grRack.getUniqueValue());
-    testAssetSysId = checkString(grRack.asset.getValue());
+    };
+    var main = function () {
+      getRack();
+      getAsset();
+      createRawData();
+      testRawData();
+      makeStats();
+    };
     //
-    // store the rack data
-    if (sysId !== null) {
-      rackData[sysId] = {
-        assetSysId: testAssetSysId,
-        installStatus: checkString(grRack.install_status.getValue()),
-        name: checkString(grRack.name.getValue()),
-        uRackPositionStage: checkString(grRack.u_rack_position_stage.getValue()),
-        uCablingInstalled: checkString(grRack.u_cabling_installed.getValue()),
-        uCmdbCiStatus: checkString(grRack.u_cmdb_ci_status.getDisplayValue()),
-        uPduInstalled: checkString(grRack.u_pdu_installed.getValue()),
-        uTorInstalled: checkString(grRack.u_tor_installed.getValue()),
-      };
-    }
+    main();
     //
-    // store the asset sys_ids for the alm_hardware batch query
-    if (testAssetSysId !== null) {
-      uniqueAssetSysid[testAssetSysId] = true;
-    }
-  }
-};
-var report = function () {
-  //
-  var countBad = 0;
-  var countGood = 0;
-  var percentage = 0;
-  var reportString = '';
-  var total = 0;
-  //
-  countBad = Object.keys(badData).length;
-  countGood = Object.keys(goodData).length;
-  total = countBad + countGood;
-  percentage = (countGood / total) * 100;
-  //
-  reportString += '\n\n\n\n';
-  reportString += "Total good data = ".concat(countGood, "\n");
-  reportString += "Total bad data = ".concat(countBad, "\n");
-  reportString += "Pass rate = ".concat(percentage, "%\n");
-  reportString += '\n\n\n\n';
-  gs.print(reportString);
-  gs.print('\n\n\n\n');
-  gs.print('Bad data');
-  gs.print(badData);
-  gs.print('\n\n\n\n');
-  gs.print('Good data');
-  gs.print(goodData);
-  gs.print('\n\n\n\n');
-};
-var main = function () {
-  //
-  var encodedQuery = '';
-  //
-  // room view
-  // https://godaddydev.service-now.com/sp?id=room_view&sys_id=1ca188a9db71c7442b56541adc961915
-  //
-  // cmdb_ci_rack list
-  // https://godaddydev.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_rack_list.do%3Fsysparm_query%3Dname%253DP3SJ01.01%255EORname%253DP3SJ01.02%255EORname%253DP3SJ01.03%255EORname%253DP3SJ01.04%255EORname%253DP3SJ01.05%255EORname%253DP3SJ01.06%255EORname%253DP3SJ01.07%255EORname%253DP3SJ01.08%255EORname%253DP3SJ01.09
-  //
-  // encodedQuery = 'name=P3SJ01.02^ORname=P3SJ01.03^ORname=P3SJ01.04^ORname=P3SJ01.05';
-  // encodedQuery += '^ORname=P3SJ01.06^ORname=P3SJ01.07^ORname=P3SJ01.08^ORname=P3SJ01.09';
-  encodedQuery = 'nameSTARTSWITHa2sa';
-  //
-  getRack(encodedQuery);
-  getAsset();
-  createFinalData();
-  sortData();
-  report();
+    return {
+      errors: errors,
+      rawData: rawData,
+      stats: stats,
+    };
+  },
+  type: 'Test',
 };
 //
-main();
+// code for script include - end
+//
+var testing = function () {
+  //
+  // https://godaddydev.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_rack_list.do%3Fsysparm_query%3DnameSTARTSWITHp3sj01.01%255EORnameSTARTSWITHp3sj01.02%255EORnameSTARTSWITHp3sj01.03%255EORnameSTARTSWITHp3sj01.04%255EORnameSTARTSWITHp3sj01.05%255EORnameSTARTSWITHp3sj01.06%255EORnameSTARTSWITHp3sj01.07%255EORnameSTARTSWITHp3sj01.08%255EORnameSTARTSWITHp3sj01.09%26sysparm_first_row%3D1%26sysparm_view%3D
+  //
+  var shiny = new ThingThatNeedsNaming();
+  var results = shiny.execute('nameSTARTSWITHp3sj01.01^ORnameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05^ORnameSTARTSWITHp3sj01.06^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09');
+  //
+  gs.debug('\n\n***********\n** stats **\n***********\n');
+  gs.debug(results.stats);
+  gs.debug('\n\n************\n** errors **\n************\n');
+  gs.debug(results.errors);
+  gs.debug('\n\n*************\n** rawData **\n*************\n');
+  gs.debug(results.rawData);
+};
+testing();
