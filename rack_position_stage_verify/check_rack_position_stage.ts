@@ -160,6 +160,9 @@ ThingThatNeedsNaming.prototype = {
         if (rawDataChunk.asset_substatus !== 'allocated') {
           storeError('Rack Being Configured - asset_substatus is not allocated', rawDataChunk.rack_sys_id);
         }
+        if (rawDataChunk.asset_sys_id === null) {
+          storeError('Rack Being Configured - asset_sys_id is null', rawDataChunk.rack_sys_id);
+        }
         if (rawDataChunk.rack_install_status !== '1') {
           storeError('Rack Being Configured - rack_install_status is not 1', rawDataChunk.rack_sys_id);
         }
@@ -243,7 +246,7 @@ ThingThatNeedsNaming.prototype = {
     ) => {
       if (rawDataChunk.rack_u_rack_position_stage === 'pendingLand') {
         if (rawDataChunk.asset_install_status !== null) {
-          storeError('PendingLand - xxxxxx is not null', rawDataChunk.rack_sys_id);
+          storeError('PendingLand - asset_install_status is not null', rawDataChunk.rack_sys_id);
         }
         if (rawDataChunk.asset_substatus !== null) {
           storeError('PendingLand - asset_substatus is not null', rawDataChunk.rack_sys_id);
@@ -433,9 +436,6 @@ ThingThatNeedsNaming.prototype = {
         storeError('Empty - rack position stage is missing', rawDataChunk.rack_sys_id);
       }
     };
-    // if (rawDataChunk.xxxxxxxxxx !== xxxxxxxxxx) {
-    //   storeError('xxxxxx - xxxxxx is not xxxxx', rawDataChunk.rack_sys_id);
-    // }
     const testRawData = () => {
       Object.keys(rawData).forEach((rackSysId) => {
         checkEmpty(rawData[rackSysId]);
