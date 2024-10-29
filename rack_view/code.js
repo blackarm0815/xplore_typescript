@@ -2,87 +2,143 @@
 //
 // code for script include - start
 //
-var ScriptIncludeThing = Class.create();
-ScriptIncludeThing.prototype = {
+var Kaiju = Class.create();
+Kaiju.prototype = {
   initialize: function () { },
   execute: function (encodedQuery) {
     //
-    // all datastructures will exist in the scope of execute()
-    // all functions will exist in the scope of execute()
-    // data will be returned from the scope of execute()
+    var assetData = {};
+    var modelData = {};
+    var patchpanelData = {};
+    var rackData = {};
+    var uniqueModelSysId = {};
+    var uniqueRackSysId = {};
     //
-    var errors = {};
-    var mergeData = {};
-    var stats = {
-      total_errors: 0,
-      total_mergeData: 0,
-      pass_rate: 0,
-    };
-    //
-    var makeStats = function () {
-      var passRate = 0;
-      var totalErrors = 0;
-      var totalMergeData = 0;
-      //
-      totalErrors = Object.keys(errors).length;
-      totalMergeData = Object.keys(mergeData).length;
-      if (totalMergeData !== 0) {
-        passRate = ((totalMergeData - totalErrors) / totalMergeData) * 100;
+    var checkInteger = function (testVariable) {
+      if (typeof testVariable === 'string') {
+        if (!Number.isNaN(parseInt(testVariable, 10))) {
+          return parseInt(testVariable, 10);
+        }
       }
-      stats = {
-        total_errors: totalErrors,
-        total_mergeData: totalMergeData,
-        pass_rate: passRate,
-      };
+      return null;
     };
-    var makeFakeData = function () {
-      //
-      var fakeSysId1 = 'd317aed433a95210702121c91e5c7aaa';
-      var fakeSysId2 = 'd317aed433a95210702121c91e5c7aab';
-      var fakeSysId3 = 'd317aed433a95210702121c91e5c7aac';
-      var fakeSysId4 = 'd317aed433a95210702121c91e5c7aad';
-      //
-      mergeData[fakeSysId1] = {
-        apples: 1,
-        bananas: 3,
-        carrots: null,
-        name: 'blah',
-      };
-      errors[fakeSysId1] = {};
-      errors[fakeSysId1].data_quality_carrots = true;
-      mergeData[fakeSysId2] = {
-        apples: 1,
-        bananas: null,
-        carrots: 3,
-        name: null,
-      };
-      errors[fakeSysId2] = {};
-      errors[fakeSysId2].data_quality_bananas = true;
-      errors[fakeSysId2].data_quality_name = true;
-      mergeData[fakeSysId3] = {
-        apples: 1,
-        bananas: 2,
-        carrots: 3,
-        name: 'foo',
-      };
-      mergeData[fakeSysId4] = {
-        apples: 3,
-        bananas: 2,
-        carrots: 1,
-        name: encodedQuery,
-      };
+    var checkString = function (testVariable) {
+      if (typeof testVariable === 'string') {
+        if (testVariable !== '') {
+          return testVariable;
+        }
+      }
+      return null;
+    };
+    var getModel = function () {
+      var grModel;
+      var tempModelSysId;
+      if (Object.keys(uniqueModelSysId).length > 0) {
+        grModel = new GlideRecord('cmdb_model');
+        grModel.addQuery('sys_id', 'IN', Object.keys(uniqueModelSysId));
+        grModel.query();
+        while (grModel.next()) {
+          tempModelSysId = checkString(grModel.getUniqueValue());
+          if (tempModelSysId !== null) {
+            modelData[tempModelSysId] = {
+              deviceCategory: checkString(grModel.getDisplayValue('u_device_category')),
+              maxChildren: checkInteger(grModel.getValue('u_max_children')),
+              modelHeight: checkInteger(grModel.getValue('rack_units')),
+            };
+          }
+        }
+      }
+    };
+    var getPatchpanelData = function () {
+      var grPatch;
+      var modelSysId;
+      var patchpanelSysId;
+      var rackSysId;
+      grPatch = new GlideRecord('u_patch_panel');
+      grPatch.addQuery('u_rack', 'IN', Object.keys(uniqueRackSysId));
+      grPatch.query();
+      while (grPatch.next()) {
+        modelSysId = checkString(grPatch.getValue('model_id'));
+        patchpanelSysId = checkString(grPatch.getUniqueValue());
+        rackSysId = checkString(grPatch.getValue('u_rack'));
+        if (modelSysId !== null && patchpanelSysId !== null && rackSysId !== null) {
+          patchpanelData[patchpanelSysId] = {
+            modelSysId: modelSysId,
+            patchName: checkString(grPatch.getValue('name')),
+            rackSysId: rackSysId,
+            rackU: checkInteger(grPatch.getValue('u_rack_u')),
+          };
+        }
+        if (modelSysId !== null) {
+          uniqueModelSysId[modelSysId] = true;
+        }
+      }
+    };
+    var getAsset = function () {
+      var assetSysId;
+      var grAsset;
+      var modelSysId;
+      var rackSysId;
+      if (Object.keys(uniqueRackSysId).length > 0) {
+        grAsset = new GlideRecord('alm_hardware');
+        grAsset.addQuery('u_rack', 'IN', Object.keys(uniqueRackSysId));
+        grAsset.query();
+        while (grAsset.next()) {
+          assetSysId = checkString(grAsset.getUniqueValue());
+          modelSysId = checkString(grAsset.getValue('model'));
+          rackSysId = checkString(grAsset.getValue('u_rack'));
+          if (assetSysId !== null && rackSysId !== null) {
+            assetData[assetSysId] = {
+              modelSysId: modelSysId,
+              parent: checkString(grAsset.getValue('parent')),
+              rackSysId: rackSysId,
+              rackU: checkInteger(grAsset.getValue('u_rack_u')),
+              sleds: {},
+              slot: checkInteger(grAsset.getValue('u_slot')),
+            };
+            if (modelSysId !== null) {
+              uniqueModelSysId[modelSysId] = true;
+            }
+          }
+        }
+      }
+    };
+    var getRackData = function () {
+      var grRack;
+      var rackSysId;
+      var rackName;
+      var rackUnits;
+      grRack = new GlideRecord('cmdb_ci_rack');
+      grRack.addEncodedQuery(encodedQuery);
+      grRack.query();
+      while (grRack.next()) {
+        rackName = checkString(grRack.getValue('name'));
+        rackSysId = checkString(grRack.getUniqueValue());
+        rackUnits = checkInteger(grRack.getValue('rack_units'));
+        if (rackName !== null && rackSysId !== null && rackUnits !== null) {
+          rackData[rackSysId] = {
+            assets: {},
+            name: rackName,
+            rack_units: rackUnits,
+          };
+          uniqueRackSysId[rackSysId] = true;
+        }
+      }
     };
     var main = function () {
-      makeFakeData();
-      makeStats();
+      getRackData();
+      getAsset();
+      getPatchpanelData();
+      getModel();
     };
     //
     main();
     //
     return {
-      errors: errors,
-      mergeData: mergeData,
-      stats: stats,
+      assetData: assetData,
+      modelData: modelData,
+      patchpanelData: patchpanelData,
+      rackData: rackData,
     };
     //
   },
@@ -95,28 +151,39 @@ ScriptIncludeThing.prototype = {
 //
 //
 //
-var showData = function (errors, mergeData, stats) {
-  gs.debug('<h2>stats</h2>');
-  gs.debug(stats);
-  gs.debug('<h2>errors</h2>');
-  gs.debug(errors);
-  gs.debug('<h2>mergeData</h2>');
-  gs.debug(mergeData);
+var showData = function (assetData, modelData, patchpanelData, rackData) {
+  gs.debug('<h2>assetData</h2>');
+  gs.debug(assetData);
+  gs.debug('<h2>modelData</h2>');
+  gs.debug(modelData);
+  gs.debug('<h2>patchpanelData</h2>');
+  gs.debug(patchpanelData);
+  gs.debug('<h2>rackData</h2>');
+  gs.debug(rackData);
 };
 var getData = function () {
   //
   var encodedQuery = '';
   //
+  // encoded query for the example racks
+  encodedQuery = 'nameSTARTSWITHp3sj01.01^ORnameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03';
+  encodedQuery += '^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05^ORnameSTARTSWITHp3sj01.06';
+  encodedQuery += '^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
+  //
   // run the script include
-  var shiny = new ScriptIncludeThing();
+  var shiny = new Kaiju();
   var results = shiny.execute(encodedQuery);
   //
   // extract the data from the results
-  var errors = results.errors;
-  var mergeData = results.mergeData;
-  var stats = results.stats;
+  var assetData = results.assetData;
+  var modelData = results.modelData;
+  var patchpanelData = results.patchpanelData;
+  var rackData = results.rackData;
+  // const errors: Record<string, Record<string, boolean>> = results.errors;
+  // const mergeData: Record<string, MergeData> = results.mergeData;
+  // const stats: Stats = results.stats;
   //
   // show data
-  showData(errors, mergeData, stats);
+  showData(assetData, modelData, patchpanelData, rackData);
 };
 getData();
