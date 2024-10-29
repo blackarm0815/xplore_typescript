@@ -293,7 +293,6 @@ ScriptIncludeThing.prototype = {
       Object.keys(rackData).forEach(function (rackSysId) {
         testAssetInstallStatus = null;
         testAssetSubstatus = null;
-        testAssetSysId = null;
         testAssetSysId = rackData[rackSysId].asset_sys_id;
         if (testAssetSysId !== null) {
           if (Object.prototype.hasOwnProperty.call(assetData, testAssetSysId)) {
