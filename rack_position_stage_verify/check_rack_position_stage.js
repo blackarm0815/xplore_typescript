@@ -6,8 +6,8 @@
 //
 //
 //
-var ScriptIncludeThing = Class.create();
-ScriptIncludeThing.prototype = {
+var CheckRackPositionStage = Class.create();
+CheckRackPositionStage.prototype = {
   initialize: function () { },
   execute: function (encodedQuery) {
     //
@@ -430,7 +430,7 @@ var getData = function () {
   // every single rack ''
   //
   // run the script include
-  var shiny = new ScriptIncludeThing();
+  var shiny = new CheckRackPositionStage();
   var results = shiny.execute(encodedQuery);
   //
   // extract the data from the results

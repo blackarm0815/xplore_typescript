@@ -38,8 +38,8 @@ interface Stats {
 //
 //
 // @ts-ignore
-const ScriptIncludeThing = Class.create();
-ScriptIncludeThing.prototype = {
+const CheckRackPositionStage = Class.create();
+CheckRackPositionStage.prototype = {
   initialize: function() {}, // eslint-disable-line
   execute: (encodedQuery: string) => {
     //
@@ -497,7 +497,7 @@ const getData = () => {
   // every single rack ''
   //
   // run the script include
-  const shiny = new ScriptIncludeThing();
+  const shiny = new CheckRackPositionStage();
   const results = shiny.execute(encodedQuery);
   //
   // extract the data from the results
