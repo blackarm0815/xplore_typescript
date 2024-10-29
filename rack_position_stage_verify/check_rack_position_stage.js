@@ -268,7 +268,7 @@ ScriptIncludeThing.prototype = {
     };
     var checkEmpty = function (testData) {
       if (testData.rack_u_rack_position_stage === null) {
-        storeError('rack position stage is empty', testData.rack_sys_id);
+        storeError('rack_u_rack_position_stage is null', testData.rack_sys_id);
       }
     };
     var testMergeData = function () {
