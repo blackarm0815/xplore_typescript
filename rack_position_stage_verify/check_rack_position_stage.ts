@@ -12,7 +12,7 @@ interface RackData {
   rack_u_rack_position_stage: string | null;
   rack_u_tor_installed: string | null;
 }
-interface RawData {
+interface MergeData {
   asset_install_status: string | null;
   asset_substatus: string | null;
   asset_sys_id: string | null;
@@ -28,7 +28,7 @@ interface RawData {
 interface Stats {
   pass_rate: number;
   total_errors: number;
-  total_rawData: number;
+  total_mergeData: number;
 }
 //
 // code for script include - start
@@ -41,11 +41,11 @@ ScriptIncludeThing.prototype = {
     //
     const assetData: Record<string, AssetData> = {};
     const errors: Record<string, Record<string, boolean>> = {};
-    const rawData: Record<string, RawData> = {};
+    const mergeData: Record<string, MergeData> = {};
     const rackData: Record<string, RackData> = {};
     let stats: Stats = {
       total_errors: 0,
-      total_rawData: 0,
+      total_mergeData: 0,
       pass_rate: 0,
     };
     const uniqueAssetSysid: Record<string, boolean> = {};
@@ -54,16 +54,16 @@ ScriptIncludeThing.prototype = {
     const makeStats = () => {
       let passRate = 0;
       let totalErrors = 0;
-      let totalRawData = 0;
+      let totalMergeData = 0;
       //
       totalErrors = Object.keys(errors).length;
-      totalRawData = Object.keys(rawData).length;
-      if (totalRawData !== 0) {
-        passRate = ((totalRawData - totalErrors) / totalRawData) * 100;
+      totalMergeData = Object.keys(mergeData).length;
+      if (totalMergeData !== 0) {
+        passRate = ((totalMergeData - totalErrors) / totalMergeData) * 100;
       }
       stats = {
         total_errors: totalErrors,
-        total_rawData: totalRawData,
+        total_mergeData: totalMergeData,
         pass_rate: passRate,
       };
     };
@@ -77,7 +77,7 @@ ScriptIncludeThing.prototype = {
       errors[rackSysId][errorMessage] = true;
     };
     const checkStateRetired = (
-      testData: RawData,
+      testData: MergeData,
     ) => {
       if (testData.rack_u_rack_position_stage === 'retired') {
         if (testData.asset_install_status !== null) {
@@ -107,7 +107,7 @@ ScriptIncludeThing.prototype = {
       }
     };
     const checkStageReadyToRecieveServer = (
-      testData: RawData,
+      testData: MergeData,
     ) => {
       if (testData.rack_u_rack_position_stage === 'readyToReceiveServer') {
         if (testData.asset_install_status !== '1') {
@@ -137,7 +137,7 @@ ScriptIncludeThing.prototype = {
       }
     };
     const checkStageRackBeingConfigured = (
-      testData: RawData,
+      testData: MergeData,
     ) => {
       if (testData.rack_u_rack_position_stage === 'rackBeingConfigured') {
         if (testData.asset_install_status !== '1') {
@@ -164,7 +164,7 @@ ScriptIncludeThing.prototype = {
       }
     };
     const checkStageLanded = (
-      testData: RawData,
+      testData: MergeData,
     ) => {
       if (testData.rack_u_rack_position_stage === 'landed') {
         if (testData.asset_install_status !== '1') {
@@ -194,7 +194,7 @@ ScriptIncludeThing.prototype = {
       }
     };
     const checkStagePendingLand = (
-      testData: RawData,
+      testData: MergeData,
     ) => {
       if (testData.rack_u_rack_position_stage === 'pendingLand') {
         if (testData.asset_install_status !== null) {
@@ -224,7 +224,7 @@ ScriptIncludeThing.prototype = {
       }
     };
     const checkStageMakeup = (
-      testData: RawData,
+      testData: MergeData,
     ) => {
       if (testData.rack_u_rack_position_stage === 'makeup') {
         if (testData.asset_install_status !== null) {
@@ -254,7 +254,7 @@ ScriptIncludeThing.prototype = {
       }
     };
     const checkStageAvailable = (
-      testData: RawData,
+      testData: MergeData,
     ) => {
       if (testData.rack_u_rack_position_stage === 'available') {
         if (testData.asset_install_status !== null) {
@@ -284,7 +284,7 @@ ScriptIncludeThing.prototype = {
       }
     };
     const checkStageUnusable = (
-      testData: RawData,
+      testData: MergeData,
     ) => {
       if (testData.rack_u_rack_position_stage === 'unusable') {
         if (testData.asset_install_status !== null) {
@@ -314,18 +314,18 @@ ScriptIncludeThing.prototype = {
       }
     };
     const checkEmpty = (
-      testData: RawData,
+      testData: MergeData,
     ) => {
       if (testData.rack_u_rack_position_stage === null) {
         storeError('Empty - rack position stage is missing', testData.rack_sys_id);
       }
     };
-    const testRawData = () => {
+    const testMergeData = () => {
       //
-      let testData: RawData;
+      let testData: MergeData;
       //
-      Object.keys(rawData).forEach((rackSysId) => {
-        testData = rawData[rackSysId];
+      Object.keys(mergeData).forEach((rackSysId) => {
+        testData = mergeData[rackSysId];
         checkEmpty(testData);
         checkStageUnusable(testData);
         checkStageAvailable(testData);
@@ -337,15 +337,16 @@ ScriptIncludeThing.prototype = {
         checkStateRetired(testData);
       });
     };
-    const createRawData = () => {
+    const createMergeData = () => {
       //
       let testAssetInstallStatus: string | null = null;
       let testAssetSubstatus: string | null = null;
       let testAssetSysId: string | null = null;
       //
       Object.keys(rackData).forEach((rackSysId) => {
-        //
-        // try and find relevent asset data
+        testAssetInstallStatus = null;
+        testAssetSubstatus = null;
+        testAssetSysId = null;
         testAssetSysId = rackData[rackSysId].asset_sys_id;
         if (testAssetSysId !== null) {
           if (Object.prototype.hasOwnProperty.call(assetData, testAssetSysId)) {
@@ -353,7 +354,7 @@ ScriptIncludeThing.prototype = {
             testAssetSubstatus = assetData[testAssetSysId].asset_substatus;
           }
         }
-        rawData[rackSysId] = {
+        mergeData[rackSysId] = {
           asset_install_status: testAssetInstallStatus,
           asset_substatus: testAssetSubstatus,
           asset_sys_id: testAssetSysId,
@@ -436,8 +437,8 @@ ScriptIncludeThing.prototype = {
     const main = () => {
       getRack();
       getAsset();
-      createRawData();
-      testRawData();
+      createMergeData();
+      testMergeData();
       makeStats();
     };
     //
@@ -445,7 +446,7 @@ ScriptIncludeThing.prototype = {
     //
     return {
       errors,
-      rawData,
+      mergeData,
       stats,
     };
   },
@@ -473,8 +474,8 @@ const testing = () => {
   // @ts-ignore
   gs.debug(results.errors);
   // @ts-ignore
-  gs.debug('<h2>rawData</h2>');
+  gs.debug('<h2>mergeData</h2>');
   // @ts-ignore
-  gs.debug(results.rawData);
+  gs.debug(results.mergeData);
 };
 testing();

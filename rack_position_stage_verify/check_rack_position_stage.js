@@ -9,11 +9,11 @@ ScriptIncludeThing.prototype = {
     //
     var assetData = {};
     var errors = {};
-    var rawData = {};
+    var mergeData = {};
     var rackData = {};
     var stats = {
       total_errors: 0,
-      total_rawData: 0,
+      total_mergeData: 0,
       pass_rate: 0,
     };
     var uniqueAssetSysid = {};
@@ -22,16 +22,16 @@ ScriptIncludeThing.prototype = {
     var makeStats = function () {
       var passRate = 0;
       var totalErrors = 0;
-      var totalRawData = 0;
+      var totalMergeData = 0;
       //
       totalErrors = Object.keys(errors).length;
-      totalRawData = Object.keys(rawData).length;
-      if (totalRawData !== 0) {
-        passRate = ((totalRawData - totalErrors) / totalRawData) * 100;
+      totalMergeData = Object.keys(mergeData).length;
+      if (totalMergeData !== 0) {
+        passRate = ((totalMergeData - totalErrors) / totalMergeData) * 100;
       }
       stats = {
         total_errors: totalErrors,
-        total_rawData: totalRawData,
+        total_mergeData: totalMergeData,
         pass_rate: passRate,
       };
     };
@@ -267,12 +267,12 @@ ScriptIncludeThing.prototype = {
         storeError('Empty - rack position stage is missing', testData.rack_sys_id);
       }
     };
-    var testRawData = function () {
+    var testMergeData = function () {
       //
       var testData;
       //
-      Object.keys(rawData).forEach(function (rackSysId) {
-        testData = rawData[rackSysId];
+      Object.keys(mergeData).forEach(function (rackSysId) {
+        testData = mergeData[rackSysId];
         checkEmpty(testData);
         checkStageUnusable(testData);
         checkStageAvailable(testData);
@@ -284,15 +284,16 @@ ScriptIncludeThing.prototype = {
         checkStateRetired(testData);
       });
     };
-    var createRawData = function () {
+    var createMergeData = function () {
       //
       var testAssetInstallStatus = null;
       var testAssetSubstatus = null;
       var testAssetSysId = null;
       //
       Object.keys(rackData).forEach(function (rackSysId) {
-        //
-        // try and find relevent asset data
+        testAssetInstallStatus = null;
+        testAssetSubstatus = null;
+        testAssetSysId = null;
         testAssetSysId = rackData[rackSysId].asset_sys_id;
         if (testAssetSysId !== null) {
           if (Object.prototype.hasOwnProperty.call(assetData, testAssetSysId)) {
@@ -300,7 +301,7 @@ ScriptIncludeThing.prototype = {
             testAssetSubstatus = assetData[testAssetSysId].asset_substatus;
           }
         }
-        rawData[rackSysId] = {
+        mergeData[rackSysId] = {
           asset_install_status: testAssetInstallStatus,
           asset_substatus: testAssetSubstatus,
           asset_sys_id: testAssetSysId,
@@ -379,8 +380,8 @@ ScriptIncludeThing.prototype = {
     var main = function () {
       getRack();
       getAsset();
-      createRawData();
-      testRawData();
+      createMergeData();
+      testMergeData();
       makeStats();
     };
     //
@@ -388,7 +389,7 @@ ScriptIncludeThing.prototype = {
     //
     return {
       errors: errors,
-      rawData: rawData,
+      mergeData: mergeData,
       stats: stats,
     };
   },
@@ -411,7 +412,7 @@ var testing = function () {
   gs.debug(results.stats);
   gs.debug('<h2>errors</h2>');
   gs.debug(results.errors);
-  gs.debug('<h2>rawData</h2>');
-  gs.debug(results.rawData);
+  gs.debug('<h2>mergeData</h2>');
+  gs.debug(results.mergeData);
 };
 testing();
