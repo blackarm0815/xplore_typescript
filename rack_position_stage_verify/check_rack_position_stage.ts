@@ -457,13 +457,19 @@ ScriptIncludeThing.prototype = {
 //
 const testing = () => {
   //
-  let testQuery = '';
+  let encodedQuery = '';
   //
-  testQuery = 'nameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05';
-  testQuery += '^ORnameSTARTSWITHp3sj01.06^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
+  // example encoded queries
+  // rack by sys_id 'sys_id=30cae3f4db271788259e5898dc961926'
+  // rack by name 'nameSTARTSWITHp3sj01.02'
+  // row by name 'nameSTARTSWITHp3sj01'
+  // room by name 'nameSTARTSWITHp3sj'
+  //
+  encodedQuery = 'nameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05';
+  encodedQuery += '^ORnameSTARTSWITHp3sj01.06^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
   //
   const shiny = new ScriptIncludeThing();
-  const results = shiny.execute(testQuery);
+  const results = shiny.execute(encodedQuery);
   //
   // @ts-ignore
   gs.debug('<h2>stats</h2>');
