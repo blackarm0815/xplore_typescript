@@ -2,9 +2,9 @@
 //
 // code for script include - start
 //
-var ThingThatNeedsNaming = Class.create();
-ThingThatNeedsNaming.prototype = {
-  // initialize: function() {},
+var ScriptIncludeThing = Class.create();
+ScriptIncludeThing.prototype = {
+  initialize: function () { },
   execute: function (encodedQuery) {
     //
     // all datastructures will exist in the scope of execute()
@@ -12,26 +12,26 @@ ThingThatNeedsNaming.prototype = {
     // data will be returned from the scope of execute()
     //
     var errors = {};
-    var rawData = {};
+    var mergeData = {};
     var stats = {
       total_errors: 0,
-      total_rawData: 0,
+      total_mergeData: 0,
       pass_rate: 0,
     };
     //
     var makeStats = function () {
       var passRate = 0;
       var totalErrors = 0;
-      var totalRawData = 0;
+      var totalMergeData = 0;
       //
       totalErrors = Object.keys(errors).length;
-      totalRawData = Object.keys(rawData).length;
-      if (totalRawData !== 0) {
-        passRate = ((totalRawData - totalErrors) / totalRawData) * 100;
+      totalMergeData = Object.keys(mergeData).length;
+      if (totalMergeData !== 0) {
+        passRate = ((totalMergeData - totalErrors) / totalMergeData) * 100;
       }
       stats = {
         total_errors: totalErrors,
-        total_rawData: totalRawData,
+        total_mergeData: totalMergeData,
         pass_rate: passRate,
       };
     };
@@ -42,7 +42,7 @@ ThingThatNeedsNaming.prototype = {
       var fakeSysId3 = 'd317aed433a95210702121c91e5c7aac';
       var fakeSysId4 = 'd317aed433a95210702121c91e5c7aad';
       //
-      rawData[fakeSysId1] = {
+      mergeData[fakeSysId1] = {
         apples: 1,
         bananas: 3,
         carrots: null,
@@ -50,7 +50,7 @@ ThingThatNeedsNaming.prototype = {
       };
       errors[fakeSysId1] = {};
       errors[fakeSysId1].data_quality_carrots = true;
-      rawData[fakeSysId2] = {
+      mergeData[fakeSysId2] = {
         apples: 1,
         bananas: null,
         carrots: 3,
@@ -59,13 +59,13 @@ ThingThatNeedsNaming.prototype = {
       errors[fakeSysId2] = {};
       errors[fakeSysId2].data_quality_bananas = true;
       errors[fakeSysId2].data_quality_name = true;
-      rawData[fakeSysId3] = {
+      mergeData[fakeSysId3] = {
         apples: 1,
         bananas: 2,
         carrots: 3,
         name: 'foo',
       };
-      rawData[fakeSysId4] = {
+      mergeData[fakeSysId4] = {
         apples: 3,
         bananas: 2,
         carrots: 1,
@@ -81,7 +81,7 @@ ThingThatNeedsNaming.prototype = {
     //
     return {
       errors: errors,
-      rawData: rawData,
+      mergeData: mergeData,
       stats: stats,
     };
     //
@@ -89,18 +89,45 @@ ThingThatNeedsNaming.prototype = {
   type: 'Test',
 };
 //
+//
+//
 // code for script include - end
 //
-var testing = function () {
-  //
-  var shiny = new ThingThatNeedsNaming();
-  var results = shiny.execute('glideRecordEncodedQueryGoesHere');
-  //
-  gs.debug('\n\n***********\n** stats **\n***********\n');
-  gs.debug(results.stats);
-  gs.debug('\n\n************\n** errors **\n************\n');
-  gs.debug(results.errors);
-  gs.debug('\n\n*************\n** rawData **\n*************\n');
-  gs.debug(results.rawData);
+//
+//
+var showData = function (errors, mergeData, stats) {
+  gs.debug('<h2>stats</h2>');
+  gs.debug(stats);
+  gs.debug('<h2>errors</h2>');
+  gs.debug(errors);
+  gs.debug('<h2>mergeData</h2>');
+  gs.debug(mergeData);
 };
-testing();
+var getData = function () {
+  //
+  var encodedQuery = '';
+  //
+  // encoded query for the example racks
+  encodedQuery = 'nameSTARTSWITHp3sj01.01^ORnameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03';
+  encodedQuery += '^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05^ORnameSTARTSWITHp3sj01.06';
+  encodedQuery += '^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
+  //
+  // example encoded queries
+  // rack by sys_id 'sys_id=30cae3f4db271788259e5898dc961926'
+  // rack by name 'nameSTARTSWITHp3sj01.02'
+  // row by name 'nameSTARTSWITHp3sj01'
+  // room by name 'nameSTARTSWITHp3sj'
+  //
+  // run the script include
+  var shiny = new ScriptIncludeThing();
+  var results = shiny.execute(encodedQuery);
+  //
+  // extract the data from the results
+  var errors = results.errors;
+  var mergeData = results.mergeData;
+  var stats = results.stats;
+  //
+  // show data
+  showData(errors, mergeData, stats);
+};
+getData();

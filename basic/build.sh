@@ -17,8 +17,12 @@ else
 fi
 echo
 #
+# remove ts ignores
 grep -v @ts-ignore < code.js > temp.js
+# change spacing
 sed -i 's/    /  /g' temp.js
+# remove eslint-disable-line
+sed -i 's/ \/\/ eslint-disable-line//g' temp.js
 mv temp.js code.js
 echo
 echo

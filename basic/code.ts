@@ -1,4 +1,4 @@
-interface RawData {
+interface MergeData {
   apples: number | null;
   bananas: number | null;
   carrots: number | null;
@@ -7,15 +7,15 @@ interface RawData {
 interface Stats {
   pass_rate: number;
   total_errors: number;
-  total_rawData: number;
+  total_mergeData: number;
 }
 //
 // code for script include - start
 //
 // @ts-ignore
-const ThingThatNeedsNaming = Class.create();
-ThingThatNeedsNaming.prototype = {
-  // initialize: function() {},
+const ScriptIncludeThing = Class.create();
+ScriptIncludeThing.prototype = {
+  initialize: function() {}, // eslint-disable-line
   execute: (encodedQuery: string) => {
     //
     // all datastructures will exist in the scope of execute()
@@ -23,26 +23,26 @@ ThingThatNeedsNaming.prototype = {
     // data will be returned from the scope of execute()
     //
     const errors: Record<string, Record<string, boolean>> = {};
-    const rawData: Record<string, RawData> = {};
+    const mergeData: Record<string, MergeData> = {};
     let stats: Stats = {
       total_errors: 0,
-      total_rawData: 0,
+      total_mergeData: 0,
       pass_rate: 0,
     };
     //
     const makeStats = () => {
       let passRate = 0;
       let totalErrors = 0;
-      let totalRawData = 0;
+      let totalMergeData = 0;
       //
       totalErrors = Object.keys(errors).length;
-      totalRawData = Object.keys(rawData).length;
-      if (totalRawData !== 0) {
-        passRate = ((totalRawData - totalErrors) / totalRawData) * 100;
+      totalMergeData = Object.keys(mergeData).length;
+      if (totalMergeData !== 0) {
+        passRate = ((totalMergeData - totalErrors) / totalMergeData) * 100;
       }
       stats = {
         total_errors: totalErrors,
-        total_rawData: totalRawData,
+        total_mergeData: totalMergeData,
         pass_rate: passRate,
       };
     };
@@ -53,7 +53,7 @@ ThingThatNeedsNaming.prototype = {
       const fakeSysId3 = 'd317aed433a95210702121c91e5c7aac';
       const fakeSysId4 = 'd317aed433a95210702121c91e5c7aad';
       //
-      rawData[fakeSysId1] = {
+      mergeData[fakeSysId1] = {
         apples: 1,
         bananas: 3,
         carrots: null,
@@ -61,7 +61,7 @@ ThingThatNeedsNaming.prototype = {
       };
       errors[fakeSysId1] = {};
       errors[fakeSysId1].data_quality_carrots = true;
-      rawData[fakeSysId2] = {
+      mergeData[fakeSysId2] = {
         apples: 1,
         bananas: null,
         carrots: 3,
@@ -70,13 +70,13 @@ ThingThatNeedsNaming.prototype = {
       errors[fakeSysId2] = {};
       errors[fakeSysId2].data_quality_bananas = true;
       errors[fakeSysId2].data_quality_name = true;
-      rawData[fakeSysId3] = {
+      mergeData[fakeSysId3] = {
         apples: 1,
         bananas: 2,
         carrots: 3,
         name: 'foo',
       };
-      rawData[fakeSysId4] = {
+      mergeData[fakeSysId4] = {
         apples: 3,
         bananas: 2,
         carrots: 1,
@@ -92,7 +92,7 @@ ThingThatNeedsNaming.prototype = {
     //
     return {
       errors,
-      rawData,
+      mergeData,
       stats,
     };
     //
@@ -100,24 +100,59 @@ ThingThatNeedsNaming.prototype = {
   type: 'Test',
 };
 //
+//
+//
 // code for script include - end
 //
-const testing = () => {
-  //
-  const shiny = new ThingThatNeedsNaming();
-  const results = shiny.execute('glideRecordEncodedQueryGoesHere');
-  //
+//
+//
+const showData = (
+  errors: Record<string, Record<string, boolean>>,
+  mergeData: Record<string, MergeData>,
+  stats: Stats,
+) => {
   // @ts-ignore
-  gs.debug('\n\n***********\n** stats **\n***********\n');
+  gs.debug('<h2>stats</h2>');
   // @ts-ignore
-  gs.debug(results.stats);
+  gs.debug(stats);
   // @ts-ignore
-  gs.debug('\n\n************\n** errors **\n************\n');
+  gs.debug('<h2>errors</h2>');
   // @ts-ignore
-  gs.debug(results.errors);
+  gs.debug(errors);
   // @ts-ignore
-  gs.debug('\n\n*************\n** rawData **\n*************\n');
+  gs.debug('<h2>mergeData</h2>');
   // @ts-ignore
-  gs.debug(results.rawData);
+  gs.debug(mergeData);
 };
-testing();
+const getData = () => {
+  //
+  let encodedQuery = '';
+  //
+  // encoded query for the example racks
+  encodedQuery = 'nameSTARTSWITHp3sj01.01^ORnameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03';
+  encodedQuery += '^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05^ORnameSTARTSWITHp3sj01.06';
+  encodedQuery += '^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
+  //
+  // example encoded queries
+  // rack by sys_id 'sys_id=30cae3f4db271788259e5898dc961926'
+  // rack by name 'nameSTARTSWITHp3sj01.02'
+  // row by name 'nameSTARTSWITHp3sj01'
+  // room by name 'nameSTARTSWITHp3sj'
+  //
+  // run the script include
+  const shiny = new ScriptIncludeThing();
+  const results = shiny.execute(encodedQuery);
+  //
+  // extract the data from the results
+  const errors: Record<string, Record<string, boolean>> = results.errors;
+  const mergeData: Record<string, MergeData> = results.mergeData;
+  const stats: Stats = results.stats;
+  //
+  // show data
+  showData(
+    errors,
+    mergeData,
+    stats,
+  );
+};
+getData();
