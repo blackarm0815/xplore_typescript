@@ -494,6 +494,7 @@ const getData = () => {
   // rack by name 'nameSTARTSWITHp3sj01.02'
   // row by name 'nameSTARTSWITHp3sj01'
   // room by name 'nameSTARTSWITHp3sj'
+  // every single rack ''
   //
   // run the script include
   const shiny = new ScriptIncludeThing();

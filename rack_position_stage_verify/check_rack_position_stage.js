@@ -427,6 +427,7 @@ var getData = function () {
   // rack by name 'nameSTARTSWITHp3sj01.02'
   // row by name 'nameSTARTSWITHp3sj01'
   // room by name 'nameSTARTSWITHp3sj'
+  // every single rack ''
   //
   // run the script include
   var shiny = new ScriptIncludeThing();
