@@ -1,10 +1,14 @@
 "use strict";
 //
-// code for script include - start
+//
+//
+// code for script include - testScriptInclude
+//
+//
 //
 var ScriptIncludeThing = Class.create();
 ScriptIncludeThing.prototype = {
-  // initialize: function() {},
+  initialize: function () { },
   execute: function (encodedQuery) {
     //
     var assetData = {};
@@ -44,227 +48,227 @@ ScriptIncludeThing.prototype = {
     var checkStateRetired = function (testData) {
       if (testData.rack_u_rack_position_stage === 'retired') {
         if (testData.asset_install_status !== null) {
-          storeError('Retired - asset_install_status is not null', testData.rack_sys_id);
+          storeError('asset_install_status is not null', testData.rack_sys_id);
         }
         if (testData.asset_substatus !== null) {
-          storeError('Retired - asset_substatus is not null', testData.rack_sys_id);
+          storeError('asset_substatus is not null', testData.rack_sys_id);
         }
         if (testData.asset_sys_id !== null) {
-          storeError('Retired - asset_sys_id is not null', testData.rack_sys_id);
+          storeError('asset_sys_id is not null', testData.rack_sys_id);
         }
         if (testData.rack_install_status !== '7') {
-          storeError('Retired - rack_install_status is not 7', testData.rack_sys_id);
+          storeError('rack_install_status is not 7', testData.rack_sys_id);
         }
         if (testData.rack_u_cabling_installed !== '0') {
-          storeError('Retired - rack_u_cabling_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_cmdb_ci_status !== 'Retired') {
-          storeError('Retired - rack_u_cmdb_ci_status is not Retired', testData.rack_sys_id);
+          storeError('rack_u_cmdb_ci_status is not Retired', testData.rack_sys_id);
         }
         if (testData.rack_u_pdu_installed !== '0') {
-          storeError('Retired - rack_u_pdu_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_tor_installed !== '0') {
-          storeError('Retired - rack_u_tor_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
         }
       }
     };
     var checkStageReadyToRecieveServer = function (testData) {
       if (testData.rack_u_rack_position_stage === 'readyToReceiveServer') {
         if (testData.asset_install_status !== '1') {
-          storeError('Ready To Recieve Server - asset_install_status is not 1', testData.rack_sys_id);
+          storeError('asset_install_status is not 1', testData.rack_sys_id);
         }
         if (testData.asset_substatus !== 'allocated') {
-          storeError('Ready To Recieve Server - asset_substatus is not allocated', testData.rack_sys_id);
+          storeError('asset_substatus is not allocated', testData.rack_sys_id);
         }
         if (testData.asset_sys_id === null) {
-          storeError('Ready To Recieve Server - asset_sys_id is null', testData.rack_sys_id);
+          storeError('asset_sys_id is null', testData.rack_sys_id);
         }
         if (testData.rack_install_status !== '1') {
-          storeError('Ready To Recieve Server - rack_install_status is not Live', testData.rack_sys_id);
+          storeError('rack_install_status is not Live', testData.rack_sys_id);
         }
         if (testData.rack_u_cabling_installed !== '1') {
-          storeError('Ready To Recieve Server - rack_u_cabling_installed is not 1', testData.rack_sys_id);
+          storeError('rack_u_cabling_installed is not 1', testData.rack_sys_id);
         }
         if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('Ready To Recieve Server - rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
         }
         if (testData.rack_u_pdu_installed !== '1') {
-          storeError('Ready To Recieve Server - rack_u_pdu_installed is not 1', testData.rack_sys_id);
+          storeError('rack_u_pdu_installed is not 1', testData.rack_sys_id);
         }
         if (testData.rack_u_tor_installed !== '1') {
-          storeError('Ready To Recieve Server - rack_u_tor_installed is not 1', testData.rack_sys_id);
+          storeError('rack_u_tor_installed is not 1', testData.rack_sys_id);
         }
       }
     };
     var checkStageRackBeingConfigured = function (testData) {
       if (testData.rack_u_rack_position_stage === 'rackBeingConfigured') {
         if (testData.asset_install_status !== '1') {
-          storeError('Rack Being Configured - asset_install_status is not 1', testData.rack_sys_id);
+          storeError('asset_install_status is not 1', testData.rack_sys_id);
         }
         if (testData.asset_substatus !== 'allocated') {
-          storeError('Rack Being Configured - asset_substatus is not allocated', testData.rack_sys_id);
+          storeError('asset_substatus is not allocated', testData.rack_sys_id);
         }
         if (testData.asset_sys_id === null) {
-          storeError('Rack Being Configured - asset_sys_id is null', testData.rack_sys_id);
+          storeError('asset_sys_id is null', testData.rack_sys_id);
         }
         if (testData.rack_install_status !== '1') {
-          storeError('Rack Being Configured - rack_install_status is not 1', testData.rack_sys_id);
+          storeError('rack_install_status is not 1', testData.rack_sys_id);
         }
         if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('Rack Being Configured - rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
         }
         if (testData.rack_u_cabling_installed === '1' && testData.rack_u_pdu_installed === '1' && testData.rack_u_tor_installed === '1') {
-          storeError('Rack Being Configured - all check boxes are ticked (should be a mix)', testData.rack_sys_id);
+          storeError('all check boxes are ticked (should be a mix)', testData.rack_sys_id);
         }
         if (testData.rack_u_cabling_installed === '0' && testData.rack_u_pdu_installed === '0' && testData.rack_u_tor_installed === '0') {
-          storeError('Rack Being Configured - all check boxes are unticked (should be a mix)', testData.rack_sys_id);
+          storeError('all check boxes are unticked (should be a mix)', testData.rack_sys_id);
         }
       }
     };
     var checkStageLanded = function (testData) {
       if (testData.rack_u_rack_position_stage === 'landed') {
         if (testData.asset_install_status !== '1') {
-          storeError('Landed - asset_install_status is not 1', testData.rack_sys_id);
+          storeError('asset_install_status is not 1', testData.rack_sys_id);
         }
         if (testData.asset_substatus !== 'allocated') {
-          storeError('Landed - asset_substatus is not allocated', testData.rack_sys_id);
+          storeError('asset_substatus is not allocated', testData.rack_sys_id);
         }
         if (testData.asset_sys_id === null) {
-          storeError('Landed - asset_sys_id is null', testData.rack_sys_id);
+          storeError('asset_sys_id is null', testData.rack_sys_id);
         }
         if (testData.rack_install_status !== '1') {
-          storeError('Landed - rack_install_status is not 1', testData.rack_sys_id);
+          storeError('rack_install_status is not 1', testData.rack_sys_id);
         }
         if (testData.rack_u_cabling_installed !== '0') {
-          storeError('Landed - rack_u_cabling_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('Landed - rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
         }
         if (testData.rack_u_pdu_installed !== '0') {
-          storeError('Landed - rack_u_pdu_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_tor_installed !== '0') {
-          storeError('Landed - rack_u_tor_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
         }
       }
     };
     var checkStagePendingLand = function (testData) {
       if (testData.rack_u_rack_position_stage === 'pendingLand') {
         if (testData.asset_install_status !== null) {
-          storeError('PendingLand - asset_install_status is not null', testData.rack_sys_id);
+          storeError('asset_install_status is not null', testData.rack_sys_id);
         }
         if (testData.asset_substatus !== null) {
-          storeError('PendingLand - asset_substatus is not null', testData.rack_sys_id);
+          storeError('asset_substatus is not null', testData.rack_sys_id);
         }
         if (testData.asset_sys_id !== null) {
-          storeError('PendingLand - asset_sys_id is not null', testData.rack_sys_id);
+          storeError('asset_sys_id is not null', testData.rack_sys_id);
         }
         if (testData.rack_install_status !== '1') {
-          storeError('PendingLand - rack_install_status is not 1', testData.rack_sys_id);
+          storeError('rack_install_status is not 1', testData.rack_sys_id);
         }
         if (testData.rack_u_cabling_installed !== '0') {
-          storeError('PendingLand - rack_u_cabling_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('PendingLand - rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
         }
         if (testData.rack_u_pdu_installed !== '0') {
-          storeError('PendingLand - rack_u_pdu_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_tor_installed !== '0') {
-          storeError('PendingLand - rack_u_tor_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
         }
       }
     };
     var checkStageMakeup = function (testData) {
       if (testData.rack_u_rack_position_stage === 'makeup') {
         if (testData.asset_install_status !== null) {
-          storeError('Makeup - asset_install_status is not null', testData.rack_sys_id);
+          storeError('asset_install_status is not null', testData.rack_sys_id);
         }
         if (testData.asset_substatus !== null) {
-          storeError('Makeup - asset_substatus is not null', testData.rack_sys_id);
+          storeError('asset_substatus is not null', testData.rack_sys_id);
         }
         if (testData.asset_sys_id !== null) {
-          storeError('Makeup - asset_sys_id is not null', testData.rack_sys_id);
+          storeError('asset_sys_id is not null', testData.rack_sys_id);
         }
         if (testData.rack_install_status !== '1') {
-          storeError('Makeup - rack_install_status is not 1', testData.rack_sys_id);
+          storeError('rack_install_status is not 1', testData.rack_sys_id);
         }
         if (testData.rack_u_cabling_installed !== '0') {
-          storeError('Makeup - rack_u_cabling_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('Makeup - rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
         }
         if (testData.rack_u_pdu_installed !== '0') {
-          storeError('Makeup - rack_u_pdu_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_tor_installed !== '0') {
-          storeError('Makeup - rack_u_tor_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
         }
       }
     };
     var checkStageAvailable = function (testData) {
       if (testData.rack_u_rack_position_stage === 'available') {
         if (testData.asset_install_status !== null) {
-          storeError('Available - asset_install_status is not null', testData.rack_sys_id);
+          storeError('asset_install_status is not null', testData.rack_sys_id);
         }
         if (testData.asset_substatus !== null) {
-          storeError('Available - asset_substatus is not null', testData.rack_sys_id);
+          storeError('asset_substatus is not null', testData.rack_sys_id);
         }
         if (testData.asset_sys_id !== null) {
-          storeError('Available - asset_sys_id is not asset_sys_id', testData.rack_sys_id);
+          storeError('asset_sys_id is not asset_sys_id', testData.rack_sys_id);
         }
         if (testData.rack_install_status !== '1') {
-          storeError('Available - rack_install_status is not 1', testData.rack_sys_id);
+          storeError('rack_install_status is not 1', testData.rack_sys_id);
         }
         if (testData.rack_u_cabling_installed !== '0') {
-          storeError('Available - rack_u_cabling_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('Available - rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
         }
         if (testData.rack_u_pdu_installed !== '0') {
-          storeError('Available - rack_u_pdu_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_tor_installed !== '0') {
-          storeError('Available - rack_u_tor_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
         }
       }
     };
     var checkStageUnusable = function (testData) {
       if (testData.rack_u_rack_position_stage === 'unusable') {
         if (testData.asset_install_status !== null) {
-          storeError('Unusable - asset_install_status is not null', testData.rack_sys_id);
+          storeError('asset_install_status is not null', testData.rack_sys_id);
         }
         if (testData.asset_substatus !== null) {
-          storeError('Unusable - asset_substatus is not null', testData.rack_sys_id);
+          storeError('asset_substatus is not null', testData.rack_sys_id);
         }
         if (testData.asset_sys_id !== null) {
-          storeError('Unusable - asset_sys_id is not null', testData.rack_sys_id);
+          storeError('asset_sys_id is not null', testData.rack_sys_id);
         }
         if (testData.rack_install_status !== '1') {
-          storeError('Unusable - rack_install_status is not 1', testData.rack_sys_id);
+          storeError('rack_install_status is not 1', testData.rack_sys_id);
         }
         if (testData.rack_u_cabling_installed !== '0') {
-          storeError('Unusable - rack_u_cabling_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('Unusable - rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
         }
         if (testData.rack_u_pdu_installed !== '0') {
-          storeError('Unusable - rack_u_pdu_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
         }
         if (testData.rack_u_tor_installed !== '0') {
-          storeError('Unusable - rack_u_tor_installed is not 0', testData.rack_sys_id);
+          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
         }
       }
     };
     var checkEmpty = function (testData) {
       if (testData.rack_u_rack_position_stage === null) {
-        storeError('Empty - rack position stage is missing', testData.rack_sys_id);
+        storeError('rack position stage is empty', testData.rack_sys_id);
       }
     };
     var testMergeData = function () {
@@ -395,21 +399,34 @@ ScriptIncludeThing.prototype = {
   type: 'Test',
 };
 //
+//
+//
 // code for script include - end
 //
-var testing = function () {
+//
+//
+var showData = function (errors, mergeData, stats) {
+  gs.debug('<h2>stats</h2>');
+  gs.debug(stats);
+  gs.debug('<h2>errors</h2>');
+  gs.debug(errors);
+  gs.debug('<h2>mergeData</h2>');
+  gs.debug(mergeData);
+};
+var testScriptInclude = function () {
   //
   var encodedQuery = '';
+  //
+  // encoded query for the example racks
+  encodedQuery = 'nameSTARTSWITHp3sj01.01^ORnameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03';
+  encodedQuery += '^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05^ORnameSTARTSWITHp3sj01.06';
+  encodedQuery += '^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
   //
   // example encoded queries
   // rack by sys_id 'sys_id=30cae3f4db271788259e5898dc961926'
   // rack by name 'nameSTARTSWITHp3sj01.02'
   // row by name 'nameSTARTSWITHp3sj01'
   // room by name 'nameSTARTSWITHp3sj'
-  //
-  // encoded query for the 8 example racks
-  encodedQuery = 'nameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05';
-  encodedQuery += '^ORnameSTARTSWITHp3sj01.06^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
   //
   // run the script include
   var shiny = new ScriptIncludeThing();
@@ -421,11 +438,6 @@ var testing = function () {
   var stats = results.stats;
   //
   // show data
-  gs.debug('<h2>stats</h2>');
-  gs.debug(stats);
-  gs.debug('<h2>errors</h2>');
-  gs.debug(errors);
-  gs.debug('<h2>mergeData</h2>');
-  gs.debug(mergeData);
+  showData(errors, mergeData, stats);
 };
-testing();
+testScriptInclude();
