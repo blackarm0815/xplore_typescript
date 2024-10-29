@@ -407,17 +407,25 @@ var testing = function () {
   // row by name 'nameSTARTSWITHp3sj01'
   // room by name 'nameSTARTSWITHp3sj'
   //
+  // encoded query for the 8 example racks
   encodedQuery = 'nameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05';
   encodedQuery += '^ORnameSTARTSWITHp3sj01.06^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
   //
+  // run the script include
   var shiny = new ScriptIncludeThing();
   var results = shiny.execute(encodedQuery);
   //
+  // extract the data from the results
+  var errors = results.errors;
+  var mergeData = results.mergeData;
+  var stats = results.stats;
+  //
+  // show data
   gs.debug('<h2>stats</h2>');
-  gs.debug(results.stats);
+  gs.debug(stats);
   gs.debug('<h2>errors</h2>');
-  gs.debug(results.errors);
+  gs.debug(errors);
   gs.debug('<h2>mergeData</h2>');
-  gs.debug(results.mergeData);
+  gs.debug(mergeData);
 };
 testing();

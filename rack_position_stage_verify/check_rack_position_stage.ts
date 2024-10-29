@@ -464,23 +464,31 @@ const testing = () => {
   // row by name 'nameSTARTSWITHp3sj01'
   // room by name 'nameSTARTSWITHp3sj'
   //
+  // encoded query for the 8 example racks
   encodedQuery = 'nameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05';
   encodedQuery += '^ORnameSTARTSWITHp3sj01.06^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
   //
+  // run the script include
   const shiny = new ScriptIncludeThing();
   const results = shiny.execute(encodedQuery);
   //
+  // extract the data from the results
+  const errors: Record<string, Record<string, boolean>> = results.errors;
+  const mergeData: Record<string, MergeData> = results.mergeData;
+  const stats: Stats = results.stats;
+  //
+  // show data
   // @ts-ignore
   gs.debug('<h2>stats</h2>');
   // @ts-ignore
-  gs.debug(results.stats);
+  gs.debug(stats);
   // @ts-ignore
   gs.debug('<h2>errors</h2>');
   // @ts-ignore
-  gs.debug(results.errors);
+  gs.debug(errors);
   // @ts-ignore
   gs.debug('<h2>mergeData</h2>');
   // @ts-ignore
-  gs.debug(results.mergeData);
+  gs.debug(mergeData);
 };
 testing();
