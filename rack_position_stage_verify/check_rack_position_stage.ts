@@ -33,14 +33,13 @@ interface Stats {
 //
 //
 //
-// code for script include - testScriptInclude
+// code for script include - start
 //
 //
 //
 // @ts-ignore
 const ScriptIncludeThing = Class.create();
 ScriptIncludeThing.prototype = {
-  // @ts-ignore
   initialize: function() {}, // eslint-disable-line
   execute: (encodedQuery: string) => {
     //
@@ -481,7 +480,7 @@ const showData = (
   // @ts-ignore
   gs.debug(mergeData);
 };
-const testScriptInclude = () => {
+const getData = () => {
   //
   let encodedQuery = '';
   //
@@ -512,4 +511,4 @@ const testScriptInclude = () => {
     stats,
   );
 };
-testScriptInclude();
+getData();

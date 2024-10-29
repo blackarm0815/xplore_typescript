@@ -2,7 +2,7 @@
 //
 //
 //
-// code for script include - testScriptInclude
+// code for script include - start
 //
 //
 //
@@ -413,7 +413,7 @@ var showData = function (errors, mergeData, stats) {
   gs.debug('<h2>mergeData</h2>');
   gs.debug(mergeData);
 };
-var testScriptInclude = function () {
+var getData = function () {
   //
   var encodedQuery = '';
   //
@@ -440,4 +440,4 @@ var testScriptInclude = function () {
   // show data
   showData(errors, mergeData, stats);
 };
-testScriptInclude();
+getData();
