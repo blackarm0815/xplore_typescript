@@ -345,13 +345,9 @@ ScriptIncludeThing.prototype = {
       //
       Object.keys(rackData).forEach((rackSysId) => {
         //
-        // find asset install_status and substatus
-        testAssetInstallStatus = null;
-        testAssetSubstatus = null;
+        // try and find relevent asset data
         testAssetSysId = rackData[rackSysId].asset_sys_id;
-        // was there an asset
         if (testAssetSysId !== null) {
-          // was asset data found
           if (Object.prototype.hasOwnProperty.call(assetData, testAssetSysId)) {
             testAssetInstallStatus = assetData[testAssetSysId].asset_install_status;
             testAssetSubstatus = assetData[testAssetSysId].asset_substatus;
