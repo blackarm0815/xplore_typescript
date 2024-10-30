@@ -13,17 +13,20 @@ interface RackData {
   rack_u_tor_installed: string | null;
 }
 interface MergeData {
-  asset_install_status: string | null;
-  asset_substatus: string | null;
-  asset_sys_id: string | null;
-  rack_install_status: string | null;
-  rack_name: string | null;
-  rack_sys_id: string;
-  rack_u_cabling_installed: string | null;
-  rack_u_cmdb_ci_status: string | null;
-  rack_u_pdu_installed: string | null;
-  rack_u_rack_position_stage: string | null;
-  rack_u_tor_installed: string | null;
+  data: {
+    asset_install_status: string | null;
+    asset_substatus: string | null;
+    asset_sys_id: string | null;
+    rack_install_status: string | null;
+    rack_name: string | null;
+    rack_sys_id: string;
+    rack_u_cabling_installed: string | null;
+    rack_u_cmdb_ci_status: string | null;
+    rack_u_pdu_installed: string | null;
+    rack_u_rack_position_stage: string | null;
+    rack_u_tor_installed: string | null;
+  };
+  error_log: Record<string, boolean>;
 }
 interface Stats {
   pass_rate: number;
@@ -44,7 +47,6 @@ CheckRackPositionStage.prototype = {
   execute: (encodedQuery: string) => {
     //
     const assetData: Record<string, AssetData> = {};
-    const errors: Record<string, Record<string, boolean>> = {};
     const mergeData: Record<string, MergeData> = {};
     const rackData: Record<string, RackData> = {};
     let stats: Stats = {
@@ -60,8 +62,12 @@ CheckRackPositionStage.prototype = {
       let totalErrors = 0;
       let totalMergeData = 0;
       //
-      totalErrors = Object.keys(errors).length;
       totalMergeData = Object.keys(mergeData).length;
+      Object.keys(mergeData).forEach((rackSysId) => {
+        if (Object.keys(mergeData[rackSysId].error_log).length !== 0) {
+          totalErrors += 1;
+        }
+      });
       if (totalMergeData !== 0) {
         passRate = ((totalMergeData - totalErrors) / totalMergeData) * 100;
       }
@@ -75,253 +81,250 @@ CheckRackPositionStage.prototype = {
       errorMessage: string,
       rackSysId: string,
     ) => {
-      if (!Object.prototype.hasOwnProperty.call(errors, rackSysId)) {
-        errors[rackSysId] = {};
-      }
-      errors[rackSysId][errorMessage] = true;
+      mergeData[rackSysId].error_log[errorMessage] = true;
     };
     const checkStateRetired = (
       testData: MergeData,
     ) => {
-      if (testData.rack_u_rack_position_stage === 'retired') {
-        if (testData.asset_install_status !== null) {
-          storeError('asset_install_status is not null', testData.rack_sys_id);
+      if (testData.data.rack_u_rack_position_stage === 'retired') {
+        if (testData.data.asset_install_status !== null) {
+          storeError('asset_install_status is not null', testData.data.rack_sys_id);
         }
-        if (testData.asset_substatus !== null) {
-          storeError('asset_substatus is not null', testData.rack_sys_id);
+        if (testData.data.asset_substatus !== null) {
+          storeError('asset_substatus is not null', testData.data.rack_sys_id);
         }
-        if (testData.asset_sys_id !== null) {
-          storeError('asset_sys_id is not null', testData.rack_sys_id);
+        if (testData.data.asset_sys_id !== null) {
+          storeError('asset_sys_id is not null', testData.data.rack_sys_id);
         }
-        if (testData.rack_install_status !== '7') {
-          storeError('rack_install_status is not 7', testData.rack_sys_id);
+        if (testData.data.rack_install_status !== '7') {
+          storeError('rack_install_status is not 7', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cabling_installed !== '0') {
-          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_cabling_installed !== '0') {
+          storeError('rack_u_cabling_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cmdb_ci_status !== 'Retired') {
-          storeError('rack_u_cmdb_ci_status is not Retired', testData.rack_sys_id);
+        if (testData.data.rack_u_cmdb_ci_status !== 'Retired') {
+          storeError('rack_u_cmdb_ci_status is not Retired', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_pdu_installed !== '0') {
-          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_pdu_installed !== '0') {
+          storeError('rack_u_pdu_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_tor_installed !== '0') {
-          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_tor_installed !== '0') {
+          storeError('rack_u_tor_installed is not 0', testData.data.rack_sys_id);
         }
       }
     };
     const checkStageReadyToRecieveServer = (
       testData: MergeData,
     ) => {
-      if (testData.rack_u_rack_position_stage === 'readyToReceiveServer') {
-        if (testData.asset_install_status !== '1') {
-          storeError('asset_install_status is not 1', testData.rack_sys_id);
+      if (testData.data.rack_u_rack_position_stage === 'readyToReceiveServer') {
+        if (testData.data.asset_install_status !== '1') {
+          storeError('asset_install_status is not 1', testData.data.rack_sys_id);
         }
-        if (testData.asset_substatus !== 'allocated') {
-          storeError('asset_substatus is not allocated', testData.rack_sys_id);
+        if (testData.data.asset_substatus !== 'allocated') {
+          storeError('asset_substatus is not allocated', testData.data.rack_sys_id);
         }
-        if (testData.asset_sys_id === null) {
-          storeError('asset_sys_id is null', testData.rack_sys_id);
+        if (testData.data.asset_sys_id === null) {
+          storeError('asset_sys_id is null', testData.data.rack_sys_id);
         }
-        if (testData.rack_install_status !== '1') {
-          storeError('rack_install_status is not Live', testData.rack_sys_id);
+        if (testData.data.rack_install_status !== '1') {
+          storeError('rack_install_status is not Live', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cabling_installed !== '1') {
-          storeError('rack_u_cabling_installed is not 1', testData.rack_sys_id);
+        if (testData.data.rack_u_cabling_installed !== '1') {
+          storeError('rack_u_cabling_installed is not 1', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+        if (testData.data.rack_u_cmdb_ci_status !== 'Live') {
+          storeError('rack_u_cmdb_ci_status is not Live', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_pdu_installed !== '1') {
-          storeError('rack_u_pdu_installed is not 1', testData.rack_sys_id);
+        if (testData.data.rack_u_pdu_installed !== '1') {
+          storeError('rack_u_pdu_installed is not 1', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_tor_installed !== '1') {
-          storeError('rack_u_tor_installed is not 1', testData.rack_sys_id);
+        if (testData.data.rack_u_tor_installed !== '1') {
+          storeError('rack_u_tor_installed is not 1', testData.data.rack_sys_id);
         }
       }
     };
     const checkStageRackBeingConfigured = (
       testData: MergeData,
     ) => {
-      if (testData.rack_u_rack_position_stage === 'rackBeingConfigured') {
-        if (testData.asset_install_status !== '1') {
-          storeError('asset_install_status is not 1', testData.rack_sys_id);
+      if (testData.data.rack_u_rack_position_stage === 'rackBeingConfigured') {
+        if (testData.data.asset_install_status !== '1') {
+          storeError('asset_install_status is not 1', testData.data.rack_sys_id);
         }
-        if (testData.asset_substatus !== 'allocated') {
-          storeError('asset_substatus is not allocated', testData.rack_sys_id);
+        if (testData.data.asset_substatus !== 'allocated') {
+          storeError('asset_substatus is not allocated', testData.data.rack_sys_id);
         }
-        if (testData.asset_sys_id === null) {
-          storeError('asset_sys_id is null', testData.rack_sys_id);
+        if (testData.data.asset_sys_id === null) {
+          storeError('asset_sys_id is null', testData.data.rack_sys_id);
         }
-        if (testData.rack_install_status !== '1') {
-          storeError('rack_install_status is not 1', testData.rack_sys_id);
+        if (testData.data.rack_install_status !== '1') {
+          storeError('rack_install_status is not 1', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+        if (testData.data.rack_u_cmdb_ci_status !== 'Live') {
+          storeError('rack_u_cmdb_ci_status is not Live', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cabling_installed === '1' && testData.rack_u_pdu_installed === '1' && testData.rack_u_tor_installed === '1') {
-          storeError('all check boxes are ticked (should be a mix)', testData.rack_sys_id);
+        if (testData.data.rack_u_cabling_installed === '1' && testData.data.rack_u_pdu_installed === '1' && testData.data.rack_u_tor_installed === '1') {
+          storeError('all check boxes are ticked (should be a mix)', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cabling_installed === '0' && testData.rack_u_pdu_installed === '0' && testData.rack_u_tor_installed === '0') {
-          storeError('all check boxes are unticked (should be a mix)', testData.rack_sys_id);
+        if (testData.data.rack_u_cabling_installed === '0' && testData.data.rack_u_pdu_installed === '0' && testData.data.rack_u_tor_installed === '0') {
+          storeError('all check boxes are unticked (should be a mix)', testData.data.rack_sys_id);
         }
       }
     };
     const checkStageLanded = (
       testData: MergeData,
     ) => {
-      if (testData.rack_u_rack_position_stage === 'landed') {
-        if (testData.asset_install_status !== '1') {
-          storeError('asset_install_status is not 1', testData.rack_sys_id);
+      if (testData.data.rack_u_rack_position_stage === 'landed') {
+        if (testData.data.asset_install_status !== '1') {
+          storeError('asset_install_status is not 1', testData.data.rack_sys_id);
         }
-        if (testData.asset_substatus !== 'allocated') {
-          storeError('asset_substatus is not allocated', testData.rack_sys_id);
+        if (testData.data.asset_substatus !== 'allocated') {
+          storeError('asset_substatus is not allocated', testData.data.rack_sys_id);
         }
-        if (testData.asset_sys_id === null) {
-          storeError('asset_sys_id is null', testData.rack_sys_id);
+        if (testData.data.asset_sys_id === null) {
+          storeError('asset_sys_id is null', testData.data.rack_sys_id);
         }
-        if (testData.rack_install_status !== '1') {
-          storeError('rack_install_status is not 1', testData.rack_sys_id);
+        if (testData.data.rack_install_status !== '1') {
+          storeError('rack_install_status is not 1', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cabling_installed !== '0') {
-          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_cabling_installed !== '0') {
+          storeError('rack_u_cabling_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+        if (testData.data.rack_u_cmdb_ci_status !== 'Live') {
+          storeError('rack_u_cmdb_ci_status is not Live', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_pdu_installed !== '0') {
-          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_pdu_installed !== '0') {
+          storeError('rack_u_pdu_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_tor_installed !== '0') {
-          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_tor_installed !== '0') {
+          storeError('rack_u_tor_installed is not 0', testData.data.rack_sys_id);
         }
       }
     };
     const checkStagePendingLand = (
       testData: MergeData,
     ) => {
-      if (testData.rack_u_rack_position_stage === 'pendingLand') {
-        if (testData.asset_install_status !== null) {
-          storeError('asset_install_status is not null', testData.rack_sys_id);
+      if (testData.data.rack_u_rack_position_stage === 'pendingLand') {
+        if (testData.data.asset_install_status !== null) {
+          storeError('asset_install_status is not null', testData.data.rack_sys_id);
         }
-        if (testData.asset_substatus !== null) {
-          storeError('asset_substatus is not null', testData.rack_sys_id);
+        if (testData.data.asset_substatus !== null) {
+          storeError('asset_substatus is not null', testData.data.rack_sys_id);
         }
-        if (testData.asset_sys_id !== null) {
-          storeError('asset_sys_id is not null', testData.rack_sys_id);
+        if (testData.data.asset_sys_id !== null) {
+          storeError('asset_sys_id is not null', testData.data.rack_sys_id);
         }
-        if (testData.rack_install_status !== '1') {
-          storeError('rack_install_status is not 1', testData.rack_sys_id);
+        if (testData.data.rack_install_status !== '1') {
+          storeError('rack_install_status is not 1', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cabling_installed !== '0') {
-          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_cabling_installed !== '0') {
+          storeError('rack_u_cabling_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+        if (testData.data.rack_u_cmdb_ci_status !== 'Live') {
+          storeError('rack_u_cmdb_ci_status is not Live', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_pdu_installed !== '0') {
-          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_pdu_installed !== '0') {
+          storeError('rack_u_pdu_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_tor_installed !== '0') {
-          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_tor_installed !== '0') {
+          storeError('rack_u_tor_installed is not 0', testData.data.rack_sys_id);
         }
       }
     };
     const checkStageMakeup = (
       testData: MergeData,
     ) => {
-      if (testData.rack_u_rack_position_stage === 'makeup') {
-        if (testData.asset_install_status !== null) {
-          storeError('asset_install_status is not null', testData.rack_sys_id);
+      if (testData.data.rack_u_rack_position_stage === 'makeup') {
+        if (testData.data.asset_install_status !== null) {
+          storeError('asset_install_status is not null', testData.data.rack_sys_id);
         }
-        if (testData.asset_substatus !== null) {
-          storeError('asset_substatus is not null', testData.rack_sys_id);
+        if (testData.data.asset_substatus !== null) {
+          storeError('asset_substatus is not null', testData.data.rack_sys_id);
         }
-        if (testData.asset_sys_id !== null) {
-          storeError('asset_sys_id is not null', testData.rack_sys_id);
+        if (testData.data.asset_sys_id !== null) {
+          storeError('asset_sys_id is not null', testData.data.rack_sys_id);
         }
-        if (testData.rack_install_status !== '1') {
-          storeError('rack_install_status is not 1', testData.rack_sys_id);
+        if (testData.data.rack_install_status !== '1') {
+          storeError('rack_install_status is not 1', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cabling_installed !== '0') {
-          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_cabling_installed !== '0') {
+          storeError('rack_u_cabling_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+        if (testData.data.rack_u_cmdb_ci_status !== 'Live') {
+          storeError('rack_u_cmdb_ci_status is not Live', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_pdu_installed !== '0') {
-          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_pdu_installed !== '0') {
+          storeError('rack_u_pdu_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_tor_installed !== '0') {
-          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_tor_installed !== '0') {
+          storeError('rack_u_tor_installed is not 0', testData.data.rack_sys_id);
         }
       }
     };
     const checkStageAvailable = (
       testData: MergeData,
     ) => {
-      if (testData.rack_u_rack_position_stage === 'available') {
-        if (testData.asset_install_status !== null) {
-          storeError('asset_install_status is not null', testData.rack_sys_id);
+      if (testData.data.rack_u_rack_position_stage === 'available') {
+        if (testData.data.asset_install_status !== null) {
+          storeError('asset_install_status is not null', testData.data.rack_sys_id);
         }
-        if (testData.asset_substatus !== null) {
-          storeError('asset_substatus is not null', testData.rack_sys_id);
+        if (testData.data.asset_substatus !== null) {
+          storeError('asset_substatus is not null', testData.data.rack_sys_id);
         }
-        if (testData.asset_sys_id !== null) {
-          storeError('asset_sys_id is not asset_sys_id', testData.rack_sys_id);
+        if (testData.data.asset_sys_id !== null) {
+          storeError('asset_sys_id is not asset_sys_id', testData.data.rack_sys_id);
         }
-        if (testData.rack_install_status !== '1') {
-          storeError('rack_install_status is not 1', testData.rack_sys_id);
+        if (testData.data.rack_install_status !== '1') {
+          storeError('rack_install_status is not 1', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cabling_installed !== '0') {
-          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_cabling_installed !== '0') {
+          storeError('rack_u_cabling_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+        if (testData.data.rack_u_cmdb_ci_status !== 'Live') {
+          storeError('rack_u_cmdb_ci_status is not Live', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_pdu_installed !== '0') {
-          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_pdu_installed !== '0') {
+          storeError('rack_u_pdu_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_tor_installed !== '0') {
-          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_tor_installed !== '0') {
+          storeError('rack_u_tor_installed is not 0', testData.data.rack_sys_id);
         }
       }
     };
     const checkStageUnusable = (
       testData: MergeData,
     ) => {
-      if (testData.rack_u_rack_position_stage === 'unusable') {
-        if (testData.asset_install_status !== null) {
-          storeError('asset_install_status is not null', testData.rack_sys_id);
+      if (testData.data.rack_u_rack_position_stage === 'unusable') {
+        if (testData.data.asset_install_status !== null) {
+          storeError('asset_install_status is not null', testData.data.rack_sys_id);
         }
-        if (testData.asset_substatus !== null) {
-          storeError('asset_substatus is not null', testData.rack_sys_id);
+        if (testData.data.asset_substatus !== null) {
+          storeError('asset_substatus is not null', testData.data.rack_sys_id);
         }
-        if (testData.asset_sys_id !== null) {
-          storeError('asset_sys_id is not null', testData.rack_sys_id);
+        if (testData.data.asset_sys_id !== null) {
+          storeError('asset_sys_id is not null', testData.data.rack_sys_id);
         }
-        if (testData.rack_install_status !== '1') {
-          storeError('rack_install_status is not 1', testData.rack_sys_id);
+        if (testData.data.rack_install_status !== '1') {
+          storeError('rack_install_status is not 1', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cabling_installed !== '0') {
-          storeError('rack_u_cabling_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_cabling_installed !== '0') {
+          storeError('rack_u_cabling_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_cmdb_ci_status !== 'Live') {
-          storeError('rack_u_cmdb_ci_status is not Live', testData.rack_sys_id);
+        if (testData.data.rack_u_cmdb_ci_status !== 'Live') {
+          storeError('rack_u_cmdb_ci_status is not Live', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_pdu_installed !== '0') {
-          storeError('rack_u_pdu_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_pdu_installed !== '0') {
+          storeError('rack_u_pdu_installed is not 0', testData.data.rack_sys_id);
         }
-        if (testData.rack_u_tor_installed !== '0') {
-          storeError('rack_u_tor_installed is not 0', testData.rack_sys_id);
+        if (testData.data.rack_u_tor_installed !== '0') {
+          storeError('rack_u_tor_installed is not 0', testData.data.rack_sys_id);
         }
       }
     };
     const checkEmpty = (
       testData: MergeData,
     ) => {
-      if (testData.rack_u_rack_position_stage === null) {
-        storeError('rack_u_rack_position_stage is null', testData.rack_sys_id);
+      if (testData.data.rack_u_rack_position_stage === null) {
+        storeError('rack_u_rack_position_stage is null', testData.data.rack_sys_id);
       }
     };
     const testMergeData = () => {
@@ -358,17 +361,20 @@ CheckRackPositionStage.prototype = {
           }
         }
         mergeData[rackSysId] = {
-          asset_install_status: testAssetInstallStatus,
-          asset_substatus: testAssetSubstatus,
-          asset_sys_id: testAssetSysId,
-          rack_install_status: rackData[rackSysId].rack_install_status,
-          rack_name: rackData[rackSysId].rack_name,
-          rack_sys_id: rackSysId,
-          rack_u_cabling_installed: rackData[rackSysId].rack_u_cabling_installed,
-          rack_u_cmdb_ci_status: rackData[rackSysId].rack_u_cmdb_ci_status,
-          rack_u_pdu_installed: rackData[rackSysId].rack_u_pdu_installed,
-          rack_u_rack_position_stage: rackData[rackSysId].rack_u_rack_position_stage,
-          rack_u_tor_installed: rackData[rackSysId].rack_u_tor_installed,
+          data: {
+            asset_install_status: testAssetInstallStatus,
+            asset_substatus: testAssetSubstatus,
+            asset_sys_id: testAssetSysId,
+            rack_install_status: rackData[rackSysId].rack_install_status,
+            rack_name: rackData[rackSysId].rack_name,
+            rack_sys_id: rackSysId,
+            rack_u_cabling_installed: rackData[rackSysId].rack_u_cabling_installed,
+            rack_u_cmdb_ci_status: rackData[rackSysId].rack_u_cmdb_ci_status,
+            rack_u_pdu_installed: rackData[rackSysId].rack_u_pdu_installed,
+            rack_u_rack_position_stage: rackData[rackSysId].rack_u_rack_position_stage,
+            rack_u_tor_installed: rackData[rackSysId].rack_u_tor_installed,
+          },
+          error_log: {},
         };
       });
     };
@@ -448,7 +454,6 @@ CheckRackPositionStage.prototype = {
     main();
     //
     return {
-      errors,
       mergeData,
       stats,
     };
@@ -463,7 +468,6 @@ CheckRackPositionStage.prototype = {
 //
 //
 const showData = (
-  errors: Record<string, Record<string, boolean>>,
   mergeData: Record<string, MergeData>,
   stats: Stats,
 ) => {
@@ -472,42 +476,33 @@ const showData = (
   // @ts-ignore
   gs.debug(stats);
   // @ts-ignore
-  gs.debug('<h2>errors</h2>');
-  // @ts-ignore
-  gs.debug(errors);
-  // @ts-ignore
   gs.debug('<h2>mergeData</h2>');
   // @ts-ignore
   gs.debug(mergeData);
 };
 const getData = () => {
   //
-  let encodedQuery = '';
+  // let encodedQuery = '';
   //
   // encoded query for the example racks
-  encodedQuery = 'nameSTARTSWITHp3sj01.01^ORnameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03';
-  encodedQuery += '^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05^ORnameSTARTSWITHp3sj01.06';
-  encodedQuery += '^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
+  // encodedQuery = 'nameSTARTSWITHp3sj01.01^ORnameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03';
+  // encodedQuery += '^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05^ORnameSTARTSWITHp3sj01.06';
+  // encodedQuery += '^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
   //
   // example encoded queries
   // rack by sys_id 'sys_id=30cae3f4db271788259e5898dc961926'
-  // rack by name 'nameSTARTSWITHp3sj01.02'
-  // row by name 'nameSTARTSWITHp3sj01'
   // room by name 'nameSTARTSWITHp3sj'
-  // every single rack ''
+  // every rack in cmdb_ci_rack''
   //
-  // run the script include
   const shiny = new CheckRackPositionStage();
-  const results = shiny.execute(encodedQuery);
+  const results = shiny.execute('');
   //
   // extract the data from the results
-  const errors: Record<string, Record<string, boolean>> = results.errors;
   const mergeData: Record<string, MergeData> = results.mergeData;
   const stats: Stats = results.stats;
   //
   // show data
   showData(
-    errors,
     mergeData,
     stats,
   );
