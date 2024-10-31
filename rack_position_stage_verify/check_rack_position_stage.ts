@@ -33,13 +33,6 @@ interface Stats {
   total_errors: number;
   total_mergeData: number;
 }
-//
-//
-//
-// code for script include - start
-//
-//
-//
 // @ts-ignore
 const CheckRackPositionStage = Class.create();
 CheckRackPositionStage.prototype = {
@@ -460,51 +453,16 @@ CheckRackPositionStage.prototype = {
   },
   type: 'Test',
 };
-//
-//
-//
-// code for script include - end
-//
-//
-//
-const showData = (
-  mergeData: Record<string, MergeData>,
-  stats: Stats,
-) => {
+const everything = () => {
+  const shiny = new CheckRackPositionStage();
+  const results = shiny.execute('');
   // @ts-ignore
   gs.debug('<h2>stats</h2>');
   // @ts-ignore
-  gs.debug(stats);
+  gs.debug(results.stats);
   // @ts-ignore
   gs.debug('<h2>mergeData</h2>');
   // @ts-ignore
-  gs.debug(mergeData);
+  gs.debug(results.mergeData);
 };
-const getData = () => {
-  //
-  // let encodedQuery = '';
-  //
-  // encoded query for the example racks
-  // encodedQuery = 'nameSTARTSWITHp3sj01.01^ORnameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03';
-  // encodedQuery += '^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05^ORnameSTARTSWITHp3sj01.06';
-  // encodedQuery += '^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
-  //
-  // example encoded queries
-  // rack by sys_id 'sys_id=30cae3f4db271788259e5898dc961926'
-  // room by name 'nameSTARTSWITHp3sj'
-  // every rack in cmdb_ci_rack''
-  //
-  const shiny = new CheckRackPositionStage();
-  const results = shiny.execute('');
-  //
-  // extract the data from the results
-  const mergeData: Record<string, MergeData> = results.mergeData;
-  const stats: Stats = results.stats;
-  //
-  // show data
-  showData(
-    mergeData,
-    stats,
-  );
-};
-getData();
+everything();

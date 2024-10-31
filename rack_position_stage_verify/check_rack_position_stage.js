@@ -1,11 +1,4 @@
 "use strict";
-//
-//
-//
-// code for script include - start
-//
-//
-//
 var CheckRackPositionStage = Class.create();
 CheckRackPositionStage.prototype = {
   initialize: function () { },
@@ -400,44 +393,12 @@ CheckRackPositionStage.prototype = {
   },
   type: 'Test',
 };
-//
-//
-//
-// code for script include - end
-//
-//
-//
-var showData = function (mergeData, stats) {
-  gs.debug('<h2>stats</h2>');
-  gs.debug(stats);
-  gs.debug('<h2>mergeData</h2>');
-  gs.debug(mergeData);
-};
-var getData = function () {
-  //
-  var encodedQuery = '';
-  //
-  // encoded query for the example racks
-  encodedQuery = 'nameSTARTSWITHp3sj01.01^ORnameSTARTSWITHp3sj01.02^ORnameSTARTSWITHp3sj01.03';
-  encodedQuery += '^ORnameSTARTSWITHp3sj01.04^ORnameSTARTSWITHp3sj01.05^ORnameSTARTSWITHp3sj01.06';
-  encodedQuery += '^ORnameSTARTSWITHp3sj01.07^ORnameSTARTSWITHp3sj01.08^ORnameSTARTSWITHp3sj01.09';
-  //
-  // example encoded queries
-  // rack by sys_id 'sys_id=30cae3f4db271788259e5898dc961926'
-  // rack by name 'nameSTARTSWITHp3sj02.02'
-  // row by name 'nameSTARTSWITHp3sj02'
-  // room by name 'nameSTARTSWITHp3sj'
-  // every single rack ''
-  //
-  // run the script include
+var everything = function () {
   var shiny = new CheckRackPositionStage();
-  var results = shiny.execute(encodedQuery);
-  //
-  // extract the data from the results
-  var mergeData = results.mergeData;
-  var stats = results.stats;
-  //
-  // show data
-  showData(mergeData, stats);
+  var results = shiny.execute('');
+  gs.debug('<h2>stats</h2>');
+  gs.debug(results.stats);
+  gs.debug('<h2>mergeData</h2>');
+  gs.debug(results.mergeData);
 };
-getData();
+everything();
